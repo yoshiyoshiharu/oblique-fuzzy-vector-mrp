@@ -106,3 +106,9 @@ print(AX)
 bounds =[
     (0, None)     # -3 ≤ y ≤ ∞
 ] * (T * P * 4)
+
+
+from scipy.optimize import linprog
+res = linprog(c, A_eq=A, b_eq=b, bounds=bounds)
+
+print(res)
