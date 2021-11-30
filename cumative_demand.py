@@ -1,10 +1,10 @@
 import numpy as np
 T = 5
 delta = np.array([
-  [1000, 1375], 
+  [1000, 2000], 
   [500, 1500], 
   [-1000, -500], 
-  [-1750, -1000], 
+  [-2000, -1000], 
   [8000, 10000]
 ])
 
@@ -16,7 +16,6 @@ for i in range(T):
   for j in range(i + 1):
     cumulative[i][j] = 1
 
-print(cumulative)
 import p_n
 P = np.array(p_n.positive(cumulative @ p_n.A_inv(T)))
 N = np.array(p_n.negative(cumulative @ p_n.A_inv(T)))
