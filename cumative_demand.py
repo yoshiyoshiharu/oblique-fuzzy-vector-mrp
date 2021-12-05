@@ -20,10 +20,10 @@ import p_n
 P = np.array(p_n.positive(cumulative @ p_n.A_inv(T)))
 N = np.array(p_n.negative(cumulative @ p_n.A_inv(T)))
 
-# dの下限
+# Dの下限
 D_l = P @ delta_l + N @ delta_u
 print(D_l)
 
-# dの上限
+# Dの上限
 D_u = N @ delta_l + P @ delta_u
 print(D_u)
