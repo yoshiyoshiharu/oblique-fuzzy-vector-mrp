@@ -1,8 +1,8 @@
 import itertools
 
-""""" DATAS """"
+# ------ DATAS ------
 P = 3
-T = 2
+T = 4
 R = 2
 
 c_I = [85, 30, 31] # inventory cost of product p
@@ -12,19 +12,18 @@ b_P = [10000, 5500, 0] # sales price of product p
 b = [[0, 0, 0], [1, 0, 0], [2, 0, 0]] # amount of product i to produce product j
 Ld = [0, 0, 0] # lead time of product p
 a = [[1, 0], [0, 2], [1, 0]] # a_(p,r) amount of resource r to produce product p 
-l = [[1000, 2000], [1000, 2000], [1000, 2000]] # l_(t,r) lowwer resource r of period t
-u = [[10000, 9100], [10000, 9100], [10000, 9100]] # u_(t,r)upper resource r of period t
-L = [[1000, 2000], [2000, 4000], [3000, 6000]]
-U = [[10000, 9100], [20000, 18200], [30000, 27300]]
-  
-d = [[100, 200], [350, 300], [350, 450]] # d_(t,p) demand of product p of period t
-D = [[100, 200], [450, 500], [800, 950]]
+l = [[1000, 2000], [1000, 2000], [1000, 2000], [1000, 2000]] # l_(t,r) lowwer resource r of period t
+u = [[10000, 9100], [10000, 9100], [10000, 9100], [10000, 9100]] # u_(t,r)upper resource r of period t
+L = [[1000, 2000], [2000, 4000], [1000, 2000], [2000, 4000]]
+U = [[10000, 9100], [20000, 18200], [10000, 9100], [20000, 18200]]
+
+D = [[100, 200, 0], [450, 500, 0], [800, 950, 0], [1000, 1250, 0]]
 
 c = c_I * T + c_B * T + c_P * T + list(map(lambda x: x * -1, b_P)) * T 
 
 # B_t,p - I_t,p + sum(x_i,p - sum(b_p,j * x_i+Ldj,j)
 
-""""" LP """"
+# ------ LP ------
 I = [[0] * (T * P) for _ in range(T * P)]
 for i in range(T * P):
   I[i][i] = -1
@@ -74,9 +73,9 @@ A_2 = [[] * (T * P * 4) for _ in range(T * P)] # 2つ目の制約式の左辺
 for i in range(T * P):
   A_2[i] = I[i] + B[i] + x[i] + s[i]
 
-A = A_1 + A_2
+A_eq = A_1 + A_2
 
-b = list(itertools.chain.from_iterable(D)) * 2
+b_eq = list(itertools.chain.from_iterable(D)) * 2
 
 ax = [[0] * (T * P) for _ in range(T * R)]
 # l < sum(ax) < u
@@ -99,14 +98,11 @@ for t in range(T):
         t_j = t * P + j
         AX[i_r][t_j] += a[j][r]
 
-print(AX)
-
 bounds =[
     (0, None) 
 ] * (T * P * 4)
 
 
 from scipy.optimize import linprog
-res = linprog(c, A_eq=A, b_eq=b, bounds=bounds)
-
+res = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds)
 print(res)
