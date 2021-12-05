@@ -1,5 +1,6 @@
 import itertools
 
+""""" DATAS """"
 P = 3
 T = 2
 R = 2
@@ -23,6 +24,7 @@ c = c_I * T + c_B * T + c_P * T + list(map(lambda x: x * -1, b_P)) * T
 
 # B_t,p - I_t,p + sum(x_i,p - sum(b_p,j * x_i+Ldj,j)
 
+""""" LP """"
 I = [[0] * (T * P) for _ in range(T * P)]
 for i in range(T * P):
   I[i][i] = -1
@@ -50,8 +52,6 @@ A_1 = [[] * (T * P * 4) for _ in range(T * P)] # 1つ目の制約式の左辺
 for i in range(T * P):
   A_1[i] = I[i] + B[i] + x[i] + s[i]
 
-# print(A_1)
-
 # sum s_(i,p) + B_(t, p)
 
 I = [[0] * (T * P) for _ in range(T * P)]
@@ -73,8 +73,6 @@ for t in range(T):
 A_2 = [[] * (T * P * 4) for _ in range(T * P)] # 2つ目の制約式の左辺
 for i in range(T * P):
   A_2[i] = I[i] + B[i] + x[i] + s[i]
-
-# print(A_2)
 
 A = A_1 + A_2
 
@@ -104,7 +102,7 @@ for t in range(T):
 print(AX)
 
 bounds =[
-    (0, None)     # -3 ≤ y ≤ ∞
+    (0, None) 
 ] * (T * P * 4)
 
 
