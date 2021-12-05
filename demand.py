@@ -13,7 +13,7 @@ delta = np.array([
 delta_l = delta[:, 0]
 delta_u = delta[:, 1]
 
-import p_n
+from lib import p_n
 P = np.array(p_n.positive(p_n.A_inv(T)))
 N = np.array(p_n.negative(p_n.A_inv(T)))
 

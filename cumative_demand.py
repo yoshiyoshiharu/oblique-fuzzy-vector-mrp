@@ -16,7 +16,7 @@ for i in range(T):
   for j in range(i + 1):
     cumulative[i][j] = 1
 
-import p_n
+from lib import p_n
 P = np.array(p_n.positive(cumulative @ p_n.A_inv(T)))
 N = np.array(p_n.negative(cumulative @ p_n.A_inv(T)))
 
