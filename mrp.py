@@ -1,49 +1,60 @@
 import itertools
-
+ 
 # ------ DATAS ------
-P = 3
+P = 4
 T = 4
-R = 2
+R = 3
 
-c_I = [85, 30, 31] # inventory cost of product p
-c_B = [1500, 825, 600] # backordering cost of product p
-c_P = [1000, 500, 600] # production cost of product p
-b_P = [10000, 5500, 0] # sales price of product p 
-b = [[0, 0, 0], [1, 0, 0], [2, 0, 0]] # amount of product i to produce product j
-Ld = [0, 0, 0] # lead time of product p
-a = [[1, 0], [0, 2], [1, 0]] # a_(p,r) amount of resource r to produce product p 
-l = [[1000, 2000], [1000, 2000], [1000, 2000], [1000, 2000]] # l_(t,r) lowwer resource r of period t
-u = [[10000, 9100], [10000, 9100], [10000, 9100], [10000, 9100]] # u_(t,r)upper resource r of period t
-L = [[1000, 2000], [2000, 4000], [1000, 2000], [2000, 4000]]
-U = [[10000, 9100], [20000, 18200], [10000, 9100], [20000, 18200]]
+c_P = [1000, 600, 500, 100] # production cost of product p
+b_P = [10000, 5500, 0, 0] # sales price of product p 
+c_I = list(map(lambda x: x * 0.05, c_P)) # inventory cost of product p
+c_B = list(map(lambda x: x * 0.15, b_P)) # backordering cost of product p
 
-D = [[100, 200, 0], [450, 500, 0], [800, 950, 0], [1000, 1250, 0]]
+b = [[0, 0, 0, 0], [2, 0, 0, 0], [1, 0, 0, 0], [0, 0, 2, 0]] # b_(i,j)amount of product i to produce product j
+Ld = [0, 0, 1, 0] # lead time of product p
+a = [[1, 0, 1], [2, 0, 0], [0, 2, 0], [0, 0, 1]] # a_(p,r) amount of resource r to produce product p 
+l = [[0, 0, 0], [0, 0 ,0], [1000, 2000, 2000], [1000, 2000, 2000]] # l_(t,r) lowwer resource r of period t
+u = [[10000, 9100, 10300], [10000, 9100, 9300], [10000, 11200, 9300], [10000, 11200, 9300]] # u_(t,r)upper resource r of period t
+L = [[0, 0, 0], [0, 0 ,0], [1000, 2000, 2000], [2000, 4000, 4000]]
+U = [[10000, 9100, 10300], [20000, 18200, 19600], [30000, 29400, 28900], [40000, 40600, 38200]]
+
+D = [[200, 300, 0, 0], [500, 600, 0, 0], [1000, 1200, 0, 0], [1500, 2000, 0, 0]]
 
 c = c_I * T + c_B * T + c_P * T + list(map(lambda x: x * -1, b_P)) * T 
 
-# B_t,p - I_t,p + sum(x_i,p - sum(b_p,j * x_i+Ldj,j)
 
 # ------ LP ------
+
+# 制約式1のIの係数
 I = [[0] * (T * P) for _ in range(T * P)]
 for i in range(T * P):
   I[i][i] = -1
 
+# 制約式1のBの係数
 B = [[0] * (T * P) for _ in range(T * P)]
 for i in range(T * P):
   B[i][i] = 1
 
+# 1番目の制約式のxの係数
 x = [[0] * (T * P) for _ in range(T * P)]
 
 for t in range(T):
+  print(f"----------------------------t={t}-------------------------")
   for p in range(P):
-    t_p = t * P + p # t_p = 0, 1, 2, 3, 4 ,5 ... (t, p) = (2, 3)のとき 5を返す
+    print(f"------------------p={p}-------------------")
+    t_p = t * P + p # t_p = 0, 1, 2, 3, 4 ,5 ... (t, p) = (2, 3)のとき 4を返す
 
     for i in range(t + 1):
+      print(f"--------------i={i}----------")
       i_p = i * P + p
       x[t_p][i_p] += 1
       for j in range(P):
+        print(f"--------j={j}------")
         i_Ldj_j = (i + Ld[j]) * P + j
-        x[t_p][i_Ldj_j] -= b[p][j]
+        # print(i_Ldj_j)
+        if i + Ld[j] < T:
+          print(f"(i+Ldj,j)=({i+Ld[j]}, {j}) b[p][j] = {b[p][j]}")
+          x[t_p][i_Ldj_j] -= b[p][j]
 
 s = [[0] * (T * P) for _ in range(T * P)]
 
@@ -77,6 +88,8 @@ A_eq = A_1 + A_2
 
 b_eq = list(itertools.chain.from_iterable(D)) * 2
 
+
+# 3つめの制約式
 ax = [[0] * (T * P) for _ in range(T * R)]
 # l < sum(ax) < u
 for t in range(T):
