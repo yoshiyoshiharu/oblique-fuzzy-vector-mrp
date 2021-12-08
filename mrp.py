@@ -1,4 +1,5 @@
 import itertools
+import numpy as np
  
 # ------ DATAS ------
 P = 4
@@ -39,21 +40,21 @@ for i in range(T * P):
 x = [[0] * (T * P) for _ in range(T * P)]
 
 for t in range(T):
-  print(f"----------------------------t={t}-------------------------")
+  # print(f"----------------------------t={t}-------------------------")
   for p in range(P):
-    print(f"------------------p={p}-------------------")
+    # print(f"------------------p={p}-------------------")
     t_p = t * P + p # t_p = 0, 1, 2, 3, 4 ,5 ... (t, p) = (2, 3)のとき 4を返す
 
     for i in range(t + 1):
-      print(f"--------------i={i}----------")
+      # print(f"--------------i={i}----------")
       i_p = i * P + p
       x[t_p][i_p] += 1
       for j in range(P):
-        print(f"--------j={j}------")
+        # print(f"--------j={j}------")
         i_Ldj_j = (i + Ld[j]) * P + j
         # print(i_Ldj_j)
         if i + Ld[j] < T:
-          print(f"(i+Ldj,j)=({i+Ld[j]}, {j}) b[p][j] = {b[p][j]}")
+          # print(f"(i+Ldj,j)=({i+Ld[j]}, {j}) b[p][j] = {b[p][j]}")
           x[t_p][i_Ldj_j] -= b[p][j]
 
 s = [[0] * (T * P) for _ in range(T * P)]
@@ -89,8 +90,8 @@ A_eq = A_1 + A_2
 b_eq = list(itertools.chain.from_iterable(D)) * 2
 
 
-# 3つめの制約式
-ax = [[0] * (T * P) for _ in range(T * R)]
+# 3つめの制約式 資源の制約 
+ax = np.array([[0] * (T * P) for _ in range(T * R)])
 # l < sum(ax) < u
 for t in range(T):
   for r in range(R):
@@ -98,24 +99,34 @@ for t in range(T):
     for j in range(P):
       t_j = t * P + j
       ax[t_r][t_j] = a[j][r]
+  
+AX = np.array([[0] * (T * P) for _ in range(T * R)])
 
-AX = [[0] * (T * P) for _ in range(T * R)]
-
-AX = [[0] * (T * P) for _ in range(T * R)]
 for t in range(T):
   for r in range(R):
     t_r = t * R + r
-    for i in range(t + 1):
-      for j in range(P):
-        i_r = i * R + r
-        t_j = t * P + j
-        AX[i_r][t_j] += a[j][r]
+    for j in range(P):
+      for i in range(t + 1):
+        i_j = i * P + j
+        AX[t_r][i_j] = a[j][r]
+
+print(AX)
+
+zeros = np.zeros((T * R, T * P))
+ax_ub = np.concatenate([zeros, zeros, ax, zeros], axis = 1) # よこにつなげる
+AX_ub = np.concatenate([zeros, zeros, AX, zeros], axis = 1)
+
+np.set_printoptions(threshold=10000)
+ax_AX_ub = np.concatenate([ax_ub, AX_ub], axis = 0) # 縦につなげる
+
+A_ub = np.concatenate([ax_AX_ub, ax_AX_ub * (-1)], axis = 0)
+
+b_ub = np.ravel(np.concatenate([u, U, np.array(l) * (-1), np.array(L) * (-1)], axis = 0))
 
 bounds =[
     (0, None) 
 ] * (T * P * 4)
 
-
 from scipy.optimize import linprog
-res = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds)
+res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, bounds=bounds)
 print(res)
