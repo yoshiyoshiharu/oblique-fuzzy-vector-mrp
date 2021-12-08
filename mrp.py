@@ -110,8 +110,6 @@ for t in range(T):
         i_j = i * P + j
         AX[t_r][i_j] = a[j][r]
 
-print(AX)
-
 zeros = np.zeros((T * R, T * P))
 ax_ub = np.concatenate([zeros, zeros, ax, zeros], axis = 1) # よこにつなげる
 AX_ub = np.concatenate([zeros, zeros, AX, zeros], axis = 1)
@@ -128,5 +126,5 @@ bounds =[
 ] * (T * P * 4)
 
 from scipy.optimize import linprog
-res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, bounds=bounds)
+res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, bounds=bounds, method='revised simplex')
 print(res)
