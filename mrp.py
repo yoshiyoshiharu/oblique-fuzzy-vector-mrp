@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+import pprint
  
 # ------ DATAS ------
 P = 4
@@ -127,4 +128,20 @@ bounds =[
 
 from scipy.optimize import linprog
 res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, bounds=bounds, method='revised simplex')
-print(res)
+
+int_x = np.array(list(map(int, res.x))).reshape(T*4, P)
+
+
+print(f"目的関数値: {res.fun}")
+
+print("---------------I---------------")
+print(int_x[0:T])
+
+print("---------------B---------------")
+print(int_x[T:2*T])
+
+print("---------------x---------------")
+print(int_x[2*T:3*T])
+
+print("---------------s---------------")
+print(int_x[3*T:4*T])
