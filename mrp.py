@@ -15,10 +15,10 @@ c_B = list(map(lambda x: x * 0.15, b_P)) # backordering cost of product p
 b = [[0, 0, 0, 0], [2, 0, 0, 0], [1, 0, 0, 0], [0, 0, 2, 0]] # b_(i,j)amount of product i to produce product j
 Ld = [0, 0, 1, 0] # lead time of product p
 a = [[1, 0, 1], [2, 0, 0], [0, 2, 0], [0, 0, 1]] # a_(p,r) amount of resource r to produce product p 
-l = [[0, 0, 0], [0, 0 ,0], [1000, 2000, 2000], [1000, 2000, 2000]] # l_(t,r) lowwer resource r of period t
-u = [[10000, 9100, 10300], [10000, 9100, 9300], [10000, 11200, 9300], [10000, 11200, 9300]] # u_(t,r)upper resource r of period t
+l = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]] # l_(t,r) lowwer resource r of period t
+u = [[2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000]] # u_(t,r)upper resource r of period t
 L = [[0, 0, 0], [0, 0 ,0], [1000, 2000, 2000], [2000, 4000, 4000]]
-U = [[10000, 9100, 10300], [20000, 18200, 19600], [30000, 29400, 28900], [40000, 40600, 38200]]
+U = [[2000, 2000, 2000], [4000, 4000, 4000], [6000, 6000, 6000], [8000, 8000, 8000]]
 
 D = [[200, 300, 0, 0], [500, 600, 0, 0], [1000, 1200, 0, 0], [1500, 2000, 0, 0]]
 
@@ -129,7 +129,7 @@ bounds =[
 from scipy.optimize import linprog
 res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, bounds=bounds, method='revised simplex')
 
-int_x = np.array(list(map(int, res.x))).reshape(T*4, P)
+int_x = np.array(res.x).reshape(T*4, P)
 
 
 print(f"目的関数値: {res.fun}")
