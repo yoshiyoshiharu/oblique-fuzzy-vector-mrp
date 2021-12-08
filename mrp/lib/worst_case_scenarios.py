@@ -1,4 +1,6 @@
-def worst_case_scenarios(T, D):
+def worst_case_scenarios(T, D_interval):
+
+  D = D_interval # [[D1の下限, D1の上限], [D2の下限, D2の上限], [D3の下限, D3の上限]....]
   # V_t,pを求める
   V = [[] for _ in range(T)]
 
