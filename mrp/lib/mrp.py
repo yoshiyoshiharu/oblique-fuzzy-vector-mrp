@@ -15,7 +15,7 @@ Ld = [0, 0, 1, 0] # lead time of product p
 a = [[1, 0, 1], [2, 0, 0], [0, 2, 0], [0, 0, 1]] # a_(p,r) amount of resource r to produce product p 
 l = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]] # l_(t,r) lowwer resource r of period t
 u = [[2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000]] # u_(t,r)upper resource r of period t
-L = [[0, 0, 0], [0, 0 ,0], [1000, 2000, 2000], [2000, 4000, 4000]]
+L = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]]
 U = [[2000, 2000, 2000], [4000, 4000, 4000], [6000, 6000, 6000], [8000, 8000, 8000]]
 
 def mrp(D):
@@ -87,6 +87,22 @@ def mrp(D):
 
   b_eq = list(itertools.chain.from_iterable(D)) * 2
 
+  # 0 ~ Ldまではその生産量は0という制約式を加える
+  Ld_constraint = []
+  for p in range(P):
+    for i in range(Ld[p]):
+      X = [0 for _ in range(T * P)]
+      i_p = i * P + p
+      X[i_p] = 1
+      Ld_constraint.append(X)
+    
+  zeros = np.zeros((len(Ld_constraint), T * P))
+  X = np.concatenate([zeros, zeros, Ld_constraint, zeros], axis=1)
+
+  A_eq = np.concatenate([A_eq, X])
+
+  for i in range(len(Ld_constraint)):
+    b_eq.append(0)
 
   # 3つめの制約式 資源の制約 
   ax = np.array([[0] * (T * P) for _ in range(T * R)])
