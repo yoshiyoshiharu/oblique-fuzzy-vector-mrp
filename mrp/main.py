@@ -2,29 +2,51 @@ from lib import mrp
 from lib import worst_case_scenarios
 import numpy as np
 
-if __name__ == '__main__':
-  T = mrp.T
-  P = mrp.P
+T = mrp.T
+P = mrp.P
 
-  D_interval = []
-  worst_case_scenarios = worst_case_scenarios.worst_case_scenarios(T, D_interval)
+D1_interval = [
+  [100, 300],
+  [400, 600],
+  [900, 1100],
+  [1400, 1600]
+]
 
+D2_interval = [
+  [200, 400],
+  [500, 700],
+  [1100, 1300],
+  [1900, 2100]
+]
 
-  D = [[200, 300, 0, 0], [500, 600, 0, 0], [1000, 1200, 0, 0], [1500, 2000, 0, 0]]
-  res = mrp.mrp(D)
+D1_worst_case_scenarios = np.array(worst_case_scenarios.worst_case_scenarios(T, D1_interval))
+D2_worst_case_scenarios = np.array(worst_case_scenarios.worst_case_scenarios(T, D2_interval))
 
-  x = np.array(res.x).reshape(T*4, P)
+min_res_fun = 0
+for D1_scenario in D1_worst_case_scenarios:
+  for D2_scenario in D2_worst_case_scenarios:
+    D_S = np.vstack([D1_scenario, D2_scenario])
 
-  print(f"目的関数値: {res.fun}")
+    zeros = np.zeros((P - len(D_S), P))
+    D = np.vstack([D_S, zeros]).T
+    res = mrp.mrp(D)
 
-  print("---------------I---------------")
-  print(x[0:T])
+    if min_res_fun > res.fun:
+      min_res = res
+      min_res_fun = res.fun
 
-  print("---------------B---------------")
-  print(x[T:2*T])
+x = np.array(min_res.x).reshape(T*4, P)
 
-  print("---------------x---------------")
-  print(x[2*T:3*T])
+print(f"目的関数値: {min_res.fun}")
 
-  print("---------------s---------------")
-  print(x[3*T:4*T])
+print("---------------I---------------")
+print(x[0:T])
+
+print("---------------B---------------")
+print(x[T:2*T])
+
+print("---------------x---------------")
+print(x[2*T:3*T])
+
+print("---------------s---------------")
+print(x[3*T:4*T])
