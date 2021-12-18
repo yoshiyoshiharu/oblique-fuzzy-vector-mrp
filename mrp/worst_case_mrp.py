@@ -116,11 +116,30 @@ b_eq = np.zeros(sum(V_SIZE))
 A_ub = []
 
 # pi_s to pi_1
-
-# pi_1 to pi_T-1
-
 for p in range(P):
   print(f"p : {p}")
+  for w in range(len(V[p][0])):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    v = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(1)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(1)
+
+    ptw = index(p, 0, w, V)
+
+    I[ptw] = c_I[p]
+    B[ptw] = c_B[p]
+
+    pi_s[0] = 1
+    pi[ptw] = -1
+
+    A_ub.append(np.hstack([B, I, x, v, pi_s, pi, pi_t]))
+
+# pi_1 to pi_T-1
+for p in range(P):
   for t in range(T - 1):
     for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][t]), enumerate(V[p][t + 1])):
       # print(u_index, u_value, w_index, w_value)
