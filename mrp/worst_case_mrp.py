@@ -67,7 +67,7 @@ print(f"V : {V}")
 print("----------------------------------------------")
 
 
-# 目的関数 B_w, I_w, x_t,p, z_w, v_w, pi_s. pi_w, pi_t
+# 目的関数 B_w, I_w, x_t,p, z_w, v_w, pi_s. pi, pi_t
 c = np.hstack([
  np.zeros(sum(V_SIZE)),
  np.zeros(sum(V_SIZE)),
@@ -92,7 +92,7 @@ for p in range(P):
       x = np.zeros(P * T)
       v = np.zeros(sum(V_SIZE))
       pi_s = np.zeros(1)
-      pi_w = np.zeros(sum(V_SIZE))
+      pi = np.zeros(sum(V_SIZE))
       pi_t = np.zeros(1)
 
       B[ptw] = 1
@@ -108,44 +108,41 @@ for p in range(P):
 
       v[ptw] = -1
       
-      A_eq.append(np.hstack([B, I, x, v, pi_s, pi_w, pi_t]))
+      A_eq.append(np.hstack([B, I, x, v, pi_s, pi, pi_t]))
 
 b_eq = np.zeros(sum(V_SIZE))
 
 # 2つ目の制約式
 A_ub = []
+
+# pi_s to pi_1
+
+# pi_1 to pi_T-1
+
 for p in range(P):
-  for t in range(T):
-    for w in range(len(V[p][t])):
-      ptw = index(p, t, w, V)
-      # initialize
-      B = np.zeros(sum(V_SIZE))
-      I = np.zeros(sum(V_SIZE))
-      x = np.zeros(P * T)
-      v = np.zeros(sum(V_SIZE))
-      pi_s = np.zeros(1)
-      pi_w = np.zeros(sum(V_SIZE))
-      pi_t = np.zeros(1)
-
-      I[ptw] = c_I[p]
-      B[ptw] = c_B[p]
-
-A_s = [[] for _ in range(P)]
-for p in range(P):
-  for a in itertools.product([0], V[p][0]):
-    A_s[p].append(a)
-
-# print(A_s)
-
-A = [[[] for _ in range(T - 1)] for _ in range(P)]
-for p in range(P):
+  print(f"p : {p}")
   for t in range(T - 1):
-    for a in itertools.product(V[p][t], V[p][t + 1]):
-      if a[0] <= a[1]:
-        A[p][t].append(a)
+    for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][t]), enumerate(V[p][t + 1])):
+      # print(u_index, u_value, w_index, w_value)
+      if u_value <= w_value:
+        # initialize
+        B = np.zeros(sum(V_SIZE))
+        I = np.zeros(sum(V_SIZE))
+        x = np.zeros(P * T)
+        v = np.zeros(sum(V_SIZE))
+        pi_s = np.zeros(1)
+        pi = np.zeros(sum(V_SIZE))
+        pi_t = np.zeros(1)
 
-for p in range(P):
-    A[p].insert(0, A_s[p])
+        ptu = index(p, t, u_index, V)
+        ptw = index(p, t + 1, w_index, V)
 
+        I[ptw] = c_I[p]
+        B[ptw] = c_B[p]
 
-print(A)
+        pi[ptu] = 1
+        pi[ptw] = -1
+
+        A_ub.append(np.hstack([B, I, x, v, pi_s, pi, pi_t]))
+
+# pi_T to pi_t
