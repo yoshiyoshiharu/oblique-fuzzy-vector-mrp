@@ -2,7 +2,7 @@ from lib import worst_case_scenarios
 import itertools
 import numpy as np
 
-
+"""---------------------初期データ-----------------------"""
 P = 4
 T = 4
 R = 3
@@ -31,6 +31,7 @@ D_intervals = [
   ]
 ]
 
+"""---------------------関数-----------------------"""
 def index(current_p, current_t, current_w, V):
   index = 0
   for p in range(current_p):
@@ -44,6 +45,7 @@ def index(current_p, current_t, current_w, V):
 
   return index + current_w
 
+"""---------------------LP------------------------"""
 # V[p][t]
 V = [[[] for _ in range(T)] for _ in range(P)]
 
@@ -64,9 +66,8 @@ for p in range(P):
   V_SIZE[p] = sum(len(v) for v in V[p])
 
 print(f"V : {V}")
-print("----------------------------------------------")
 
-
+"""---------------------目的関数-----------------------"""
 # 目的関数 B_w, I_w, x_t,p, z_w, v_w, pi_s. pi, pi_t
 c = np.hstack([
  np.zeros(sum(V_SIZE)),
@@ -79,6 +80,7 @@ c = np.hstack([
  np.ones(1)
 ])
 
+"""---------------------制約式-----------------------"""
 # 1つ目の制約式
 A_eq = []
 for p in range(P):
@@ -253,3 +255,38 @@ for p in range(P):
     v[ptw] = -1
 
     A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+
+# 7本目の制約式
+for p in range(P):
+  for w in range(len(V[p][T-1])):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    v = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(1)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(1)
+
+    ptw = index(p, T - 1, w, V)
+
+    z[ptw] = 1
+
+    for i in range(T):
+      p_i = p * T + i
+      x[p_i] -= 1
+      for j in range(P):
+        j_i_Ldj = (i + Ld[j]) + j * P
+        if i + Ld[j] < T:
+          x[j_i_Ldj] += b[p][j]
+
+    print(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+
+b_ub = np.zeros(len(A_ub))
+
+"""----------------------------LP解く------------------------------------"""
+from scipy.optimize import linprog
+res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, method='revised simplex')
+print(res)
