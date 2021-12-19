@@ -196,4 +196,24 @@ for p in range(P):
 
     A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
+# pi_u - pi_t 4本目の制約式
 
+for p in range(P):
+  for u in range(len(V[p][T - 1])):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    v = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(1)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(1)
+
+    ptu = index(p, T - 1, u, V)
+
+    pi[ptu] = 1
+    pi_t[0] = -1
+
+    print(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
