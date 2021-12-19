@@ -215,5 +215,21 @@ for p in range(P):
     pi[ptu] = 1
     pi_t[0] = -1
 
-    print(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
     A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+
+# pi_s = 0 5本目の制約式
+for p in range(P):
+  # initialize
+  B = np.zeros(sum(V_SIZE))
+  I = np.zeros(sum(V_SIZE))
+  x = np.zeros(P * T)
+  z = np.zeros(sum(V_SIZE))
+  v = np.zeros(sum(V_SIZE))
+  pi_s = np.zeros(1)
+  pi = np.zeros(sum(V_SIZE))
+  pi_t = np.zeros(1)
+
+  pi_s[0] = 1
+
+  A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+  b_eq = np.append(b_eq, 0)
