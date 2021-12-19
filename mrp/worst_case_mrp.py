@@ -90,6 +90,7 @@ for p in range(P):
       B = np.zeros(sum(V_SIZE))
       I = np.zeros(sum(V_SIZE))
       x = np.zeros(P * T)
+      z = np.zeros(sum(V_SIZE))
       v = np.zeros(sum(V_SIZE))
       pi_s = np.zeros(1)
       pi = np.zeros(sum(V_SIZE))
@@ -108,7 +109,7 @@ for p in range(P):
 
       v[ptw] = -1
       
-      A_eq.append(np.hstack([B, I, x, v, pi_s, pi, pi_t]))
+      A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
 b_eq = np.zeros(sum(V_SIZE))
 
@@ -117,12 +118,12 @@ A_ub = []
 
 # pi_s to pi_1
 for p in range(P):
-  print(f"p : {p}")
   for w in range(len(V[p][0])):
     # initialize
     B = np.zeros(sum(V_SIZE))
     I = np.zeros(sum(V_SIZE))
     x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
     v = np.zeros(sum(V_SIZE))
     pi_s = np.zeros(1)
     pi = np.zeros(sum(V_SIZE))
@@ -136,7 +137,7 @@ for p in range(P):
     pi_s[0] = 1
     pi[ptw] = -1
 
-    A_ub.append(np.hstack([B, I, x, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
 # pi_1 to pi_T-1
 for p in range(P):
@@ -148,6 +149,7 @@ for p in range(P):
         B = np.zeros(sum(V_SIZE))
         I = np.zeros(sum(V_SIZE))
         x = np.zeros(P * T)
+        z = np.zeros(sum(V_SIZE))
         v = np.zeros(sum(V_SIZE))
         pi_s = np.zeros(1)
         pi = np.zeros(sum(V_SIZE))
@@ -162,6 +164,36 @@ for p in range(P):
         pi[ptu] = 1
         pi[ptw] = -1
 
-        A_ub.append(np.hstack([B, I, x, v, pi_s, pi, pi_t]))
+        A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
-# pi_T to pi_t
+# V_T-1 to V_T 3つめの制約式
+for p in range(P):
+  for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][T - 2]), enumerate(V[p][T - 1])):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    v = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(1)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(1)
+
+    ptu = index(p, T - 2, u_index, V)
+    ptw = index(p, T - 1, w_index, V)
+
+    I[ptw] = c_I[p]
+    B[ptw] = c_B[p]
+
+    z[ptw] = -b_P[p]
+
+    pi[ptu] = 1
+    pi[ptu] = -1
+
+    for i in range(T):
+      p_i = p * T + i
+      x[p_i] = c_P[p]
+
+    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+
+
