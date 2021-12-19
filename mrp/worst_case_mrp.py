@@ -75,10 +75,12 @@ c = np.hstack([
  np.zeros(P * T),
  np.zeros(sum(V_SIZE)),
  np.zeros(sum(V_SIZE)),
- np.zeros(1),
+ np.zeros(P),
  np.zeros(sum(V_SIZE)),
- np.ones(1)
+ np.ones(P)
 ])
+
+print(c)
 
 """---------------------制約式-----------------------"""
 # 1つ目の制約式
@@ -94,9 +96,9 @@ for p in range(P):
       x = np.zeros(P * T)
       z = np.zeros(sum(V_SIZE))
       v = np.zeros(sum(V_SIZE))
-      pi_s = np.zeros(1)
+      pi_s = np.zeros(P)
       pi = np.zeros(sum(V_SIZE))
-      pi_t = np.zeros(1)
+      pi_t = np.zeros(P)
 
       B[ptw] = 1
       I[ptw] = -1
@@ -127,16 +129,16 @@ for p in range(P):
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
     v = np.zeros(sum(V_SIZE))
-    pi_s = np.zeros(1)
+    pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
-    pi_t = np.zeros(1)
+    pi_t = np.zeros(P)
 
     ptw = index(p, 0, w, V)
 
     I[ptw] = c_I[p]
     B[ptw] = c_B[p]
 
-    pi_s[0] = 1
+    pi_s[p] = 1
     pi[ptw] = -1
 
     A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
@@ -153,9 +155,9 @@ for p in range(P):
         x = np.zeros(P * T)
         z = np.zeros(sum(V_SIZE))
         v = np.zeros(sum(V_SIZE))
-        pi_s = np.zeros(1)
+        pi_s = np.zeros(P)
         pi = np.zeros(sum(V_SIZE))
-        pi_t = np.zeros(1)
+        pi_t = np.zeros(P)
 
         ptu = index(p, t, u_index, V)
         ptw = index(p, t + 1, w_index, V)
@@ -177,9 +179,9 @@ for p in range(P):
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
     v = np.zeros(sum(V_SIZE))
-    pi_s = np.zeros(1)
+    pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
-    pi_t = np.zeros(1)
+    pi_t = np.zeros(P)
 
     ptu = index(p, T - 2, u_index, V)
     ptw = index(p, T - 1, w_index, V)
@@ -208,14 +210,14 @@ for p in range(P):
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
     v = np.zeros(sum(V_SIZE))
-    pi_s = np.zeros(1)
+    pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
-    pi_t = np.zeros(1)
+    pi_t = np.zeros(P)
 
     ptu = index(p, T - 1, u, V)
 
     pi[ptu] = 1
-    pi_t[0] = -1
+    pi_t[p] = -1
 
     A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
@@ -227,11 +229,11 @@ for p in range(P):
   x = np.zeros(P * T)
   z = np.zeros(sum(V_SIZE))
   v = np.zeros(sum(V_SIZE))
-  pi_s = np.zeros(1)
+  pi_s = np.zeros(P)
   pi = np.zeros(sum(V_SIZE))
-  pi_t = np.zeros(1)
+  pi_t = np.zeros(P)
 
-  pi_s[0] = 1
+  pi_s[p] = 1
 
   A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
   b_eq = np.append(b_eq, 0)
@@ -245,9 +247,9 @@ for p in range(P):
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
     v = np.zeros(sum(V_SIZE))
-    pi_s = np.zeros(1)
+    pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
-    pi_t = np.zeros(1)
+    pi_t = np.zeros(P)
 
     ptw = index(p, T - 1, w, V)
 
@@ -265,9 +267,9 @@ for p in range(P):
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
     v = np.zeros(sum(V_SIZE))
-    pi_s = np.zeros(1)
+    pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
-    pi_t = np.zeros(1)
+    pi_t = np.zeros(P)
 
     ptw = index(p, T - 1, w, V)
 
@@ -281,12 +283,11 @@ for p in range(P):
         if i + Ld[j] < T:
           x[j_i_Ldj] += b[p][j]
 
-    print(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
     A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
 b_ub = np.zeros(len(A_ub))
 
 """----------------------------LP解く------------------------------------"""
-from scipy.optimize import linprog
-res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, method='revised simplex')
-print(res)
+# from scipy.optimize import linprog
+# res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, method='revised simplex')
+# print(res)
