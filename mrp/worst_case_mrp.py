@@ -31,22 +31,7 @@ D_intervals = [
   ]
 ]
 
-"""---------------------関数-----------------------"""
-def index(current_p, current_t, current_w, V):
-  index = 0
-  for p in range(current_p):
-    for t in range(T):
-      length = sum(len(v) for v in V[p])
-    else:
-      index += length
-
-  for t in range(current_t):
-    index += len(V[current_p][t])
-
-  return index + current_w
-
-"""---------------------LP------------------------"""
-# V[p][t]
+"""-------------------準備-----------------------"""
 V = [[[] for _ in range(T)] for _ in range(P)]
 
 for p in range(len(D_intervals)):
@@ -66,6 +51,32 @@ for p in range(P):
   V_SIZE[p] = sum(len(v) for v in V[p])
 
 print(f"V : {V}")
+"""---------------------関数-----------------------"""
+def index(current_p, current_t, current_w, V):
+  index = 0
+  for p in range(current_p):
+    for t in range(T):
+      length = sum(len(v) for v in V[p])
+    else:
+      index += length
+
+  for t in range(current_t):
+    index += len(V[current_p][t])
+
+  return index + current_w
+
+def debug(A, b):
+  print(f"I: {A[0:sum(V_SIZE)]}")
+  print(f"B: {A[sum(V_SIZE):sum(V_SIZE)*2]}")
+  print(f"x: {A[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]}")
+  print(f"v: {A[sum(V_SIZE)*2 + (P * T):sum(V_SIZE)*3 + (P * T)]}")
+  print(f"z: {A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*4 + (P * T)]}")
+  print(f"pi_s: {A[sum(V_SIZE)*4 + (P * T):sum(V_SIZE)*4 + (P * T) + P]}")
+  print(f"pi: {A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*5 + (P * T) + P]}")
+  print(f"pi_t: {A[sum(V_SIZE)*5 + (P * T) + P:sum(V_SIZE)*5 + (P * T) + 2 * P]}")
+  print(f"b: {b}")
+
+"""--------------------------------LP-------------------------------------"""
 
 """---------------------目的関数-----------------------"""
 # 目的関数 B_w, I_w, x_t,p, z_w, v_w, pi_s. pi, pi_t
@@ -80,7 +91,7 @@ c = np.hstack([
  np.ones(P)
 ])
 
-print(c)
+print(f"c: {c}")
 
 """---------------------制約式-----------------------"""
 # 1つ目の制約式
@@ -117,6 +128,7 @@ for p in range(P):
 
 b_eq = np.zeros(sum(V_SIZE))
 
+debug(A_eq[0], b_eq[0])
 # 2つ目の制約式
 A_ub = []
 
