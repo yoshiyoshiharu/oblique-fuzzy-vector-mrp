@@ -233,3 +233,23 @@ for p in range(P):
 
   A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
   b_eq = np.append(b_eq, 0)
+
+# z_w - v_w 6本目の制約式
+for p in range(P):
+  for w in range(len(V[p][T-1])):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    v = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(1)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(1)
+
+    ptw = index(p, T - 1, w, V)
+
+    z[ptw] = 1
+    v[ptw] = -1
+
+    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
