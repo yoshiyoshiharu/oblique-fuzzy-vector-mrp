@@ -120,16 +120,16 @@ for p in range(P):
           if i + Ld[j] < T:
             x[j_i_Ldj] -= b[p][j]
       
-      A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+      A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_eq.append(V[p][t][w])
 
       print(f"----------(p, t, w) = ({p}, {t}, {w})" )
-      debug(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       print(f"b: {V[p][t][w]}")
 
 # 2つ目の制約式
 A_ub = []
-
+b_ub = []
 # pi_s to pi_1
 for p in range(P):
   for w in range(len(V[p][0])):
@@ -138,7 +138,6 @@ for p in range(P):
     I = np.zeros(sum(V_SIZE))
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
-    v = np.zeros(sum(V_SIZE))
     pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
@@ -151,7 +150,8 @@ for p in range(P):
     pi_s[p] = 1
     pi[ptw] = -1
 
-    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(0)
 
 # pi_1 to pi_T-1
 for p in range(P):
@@ -164,7 +164,6 @@ for p in range(P):
         I = np.zeros(sum(V_SIZE))
         x = np.zeros(P * T)
         z = np.zeros(sum(V_SIZE))
-        v = np.zeros(sum(V_SIZE))
         pi_s = np.zeros(P)
         pi = np.zeros(sum(V_SIZE))
         pi_t = np.zeros(P)
@@ -178,7 +177,8 @@ for p in range(P):
         pi[ptu] = 1
         pi[ptw] = -1
 
-        A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+        A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+        b_ub.append(0)
 
 # V_T-1 to V_T 3つめの制約式
 for p in range(P):
@@ -188,7 +188,6 @@ for p in range(P):
     I = np.zeros(sum(V_SIZE))
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
-    v = np.zeros(sum(V_SIZE))
     pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
@@ -208,7 +207,8 @@ for p in range(P):
       p_i = p * T + i
       x[p_i] = c_P[p]
 
-    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(0)
 
 # pi_u - pi_t 4本目の制約式
 
@@ -219,7 +219,6 @@ for p in range(P):
     I = np.zeros(sum(V_SIZE))
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
-    v = np.zeros(sum(V_SIZE))
     pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
@@ -229,7 +228,8 @@ for p in range(P):
     pi[ptu] = 1
     pi_t[p] = -1
 
-    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(0)
 
 # pi_s = 0 5本目の制約式
 for p in range(P):
@@ -238,14 +238,13 @@ for p in range(P):
   I = np.zeros(sum(V_SIZE))
   x = np.zeros(P * T)
   z = np.zeros(sum(V_SIZE))
-  v = np.zeros(sum(V_SIZE))
   pi_s = np.zeros(P)
   pi = np.zeros(sum(V_SIZE))
   pi_t = np.zeros(P)
 
   pi_s[p] = 1
 
-  A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+  A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
   b_eq = np.append(b_eq, 0)
 
 # z_w - v_w 6本目の制約式
@@ -256,7 +255,6 @@ for p in range(P):
     I = np.zeros(sum(V_SIZE))
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
-    v = np.zeros(sum(V_SIZE))
     pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
@@ -264,9 +262,9 @@ for p in range(P):
     ptw = index(p, T - 1, w, V)
 
     z[ptw] = 1
-    v[ptw] = -1
 
-    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(V[p][t][w])
 
 # 7本目の制約式
 for p in range(P):
@@ -276,7 +274,6 @@ for p in range(P):
     I = np.zeros(sum(V_SIZE))
     x = np.zeros(P * T)
     z = np.zeros(sum(V_SIZE))
-    v = np.zeros(sum(V_SIZE))
     pi_s = np.zeros(P)
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
@@ -293,11 +290,11 @@ for p in range(P):
         if i + Ld[j] < T:
           x[j_i_Ldj] += b[p][j]
 
-    A_ub.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 b_ub = np.zeros(len(A_ub))
 
 """----------------------------LP解く------------------------------------"""
-# from scipy.optimize import linprog
-# res = linprog(c, A_eq=A_eq, b_eq=b_eq, A_ub = A_ub, b_ub = b_ub, method='revised simplex')
-# print(res)
+from scipy.optimize import linprog
+res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, method='revised simplex')
+print(res)
