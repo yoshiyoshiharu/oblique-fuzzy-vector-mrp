@@ -65,16 +65,15 @@ def index(current_p, current_t, current_w, V):
 
   return index + current_w
 
-def debug(A, b):
-  print(f"I: {A[0:sum(V_SIZE)]}")
-  print(f"B: {A[sum(V_SIZE):sum(V_SIZE)*2]}")
+def debug(A):
+  print(f"B: {A[0:sum(V_SIZE)]}")
+  print(f"I: {A[sum(V_SIZE):sum(V_SIZE)*2]}")
   print(f"x: {A[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]}")
-  print(f"v: {A[sum(V_SIZE)*2 + (P * T):sum(V_SIZE)*3 + (P * T)]}")
-  print(f"z: {A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*4 + (P * T)]}")
+  print(f"z: {A[sum(V_SIZE)*2 + (P * T):sum(V_SIZE)*3 + (P * T)]}")
+  print(f"v: {A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*4 + (P * T)]}")
   print(f"pi_s: {A[sum(V_SIZE)*4 + (P * T):sum(V_SIZE)*4 + (P * T) + P]}")
   print(f"pi: {A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*5 + (P * T) + P]}")
   print(f"pi_t: {A[sum(V_SIZE)*5 + (P * T) + P:sum(V_SIZE)*5 + (P * T) + 2 * P]}")
-  print(f"b: {b}")
 
 """--------------------------------LP-------------------------------------"""
 
@@ -126,9 +125,13 @@ for p in range(P):
       
       A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
 
+      print(f"----------(p, t, w) = ({p}, {t}, {w})" )
+      debug(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+
+print(len(A_eq))
 b_eq = np.zeros(sum(V_SIZE))
 
-debug(A_eq[0], b_eq[0])
+
 # 2つ目の制約式
 A_ub = []
 
