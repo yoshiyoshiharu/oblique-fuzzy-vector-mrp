@@ -78,16 +78,15 @@ def debug(A):
 """--------------------------------LP-------------------------------------"""
 
 """---------------------目的関数-----------------------"""
-# 目的関数 B_w, I_w, x_t,p, z_w, v_w, pi_s. pi, pi_t
+# 目的関数
 c = np.hstack([
- np.zeros(sum(V_SIZE)),
- np.zeros(sum(V_SIZE)),
- np.zeros(P * T),
- np.zeros(sum(V_SIZE)),
- np.zeros(sum(V_SIZE)),
- np.zeros(P),
- np.zeros(sum(V_SIZE)),
- np.ones(P)
+ np.zeros(sum(V_SIZE)), # B_w
+ np.zeros(sum(V_SIZE)), # I_w
+ np.zeros(P * T),       # x_t,p
+ np.zeros(sum(V_SIZE)), # z_w
+ np.zeros(P),           # pi_s
+ np.zeros(sum(V_SIZE)), # pi
+ np.ones(P)             # pi_t
 ])
 
 print(f"c: {c}")
@@ -95,6 +94,7 @@ print(f"c: {c}")
 """---------------------制約式-----------------------"""
 # 1つ目の制約式
 A_eq = []
+b_eq = []
 for p in range(P):
   for t in range(T):
     for w in range(len(V[p][t])):
@@ -105,7 +105,6 @@ for p in range(P):
       I = np.zeros(sum(V_SIZE))
       x = np.zeros(P * T)
       z = np.zeros(sum(V_SIZE))
-      v = np.zeros(sum(V_SIZE))
       pi_s = np.zeros(P)
       pi = np.zeros(sum(V_SIZE))
       pi_t = np.zeros(P)
@@ -120,17 +119,13 @@ for p in range(P):
           j_i_Ldj = (i + Ld[j]) + j * P
           if i + Ld[j] < T:
             x[j_i_Ldj] -= b[p][j]
-
-      v[ptw] = -1
       
       A_eq.append(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
+      b_eq.append(V[p][t][w])
 
       print(f"----------(p, t, w) = ({p}, {t}, {w})" )
       debug(np.hstack([B, I, x, z, v, pi_s, pi, pi_t]))
-
-print(len(A_eq))
-b_eq = np.zeros(sum(V_SIZE))
-
+      print(f"b: {V[p][t][w]}")
 
 # 2つ目の制約式
 A_ub = []
