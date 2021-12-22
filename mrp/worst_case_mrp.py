@@ -66,13 +66,21 @@ def index(current_p, current_t, current_w, V):
   return index + current_w
 
 def debug(A):
-  print(f"B: {A[0:sum(V_SIZE)]}")
-  print(f"I: {A[sum(V_SIZE):sum(V_SIZE)*2]}")
-  print(f"x: {A[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]}")
-  print(f"z: {A[sum(V_SIZE)*2 + (P * T):sum(V_SIZE)*3 + (P * T)]}")
-  print(f"pi_s: {A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*3 + (P * T) + P]}")
-  print(f"pi: {A[sum(V_SIZE)*3 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + P]}")
-  print(f"pi_t: {A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + 2 * P]}")
+  B = A[0:sum(V_SIZE)]
+  I = A[sum(V_SIZE):sum(V_SIZE)*2]
+  x = A[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]
+  z = A[sum(V_SIZE)*2 + (P * T):sum(V_SIZE)*3 + (P * T)]
+  pi_s = A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*3 + (P * T) + P]
+  pi = A[sum(V_SIZE)*3 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + P]
+  pi_t = A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + 2 * P]
+
+  print(f"B: {B}")
+  print(f"I: {I}")
+  print(f"x: {x}")
+  print(f"z: {z}")
+  print(f"pi_s: {pi_s}")
+  print(f"pi: {pi}")
+  print(f"pi_t: {pi_t}")
 
 """--------------------------------LP-------------------------------------"""
 
@@ -215,7 +223,7 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    # print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})" )
+    # print(f"----------(p, t, w, u) = ({p}, {T-1}, {ptu}, {ptw})" )
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_u - pi_t 4本目の制約式
@@ -277,8 +285,8 @@ for p in range(P):
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(V[p][T - 1][w])
-    print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})" )
-    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    # print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # 7本目の制約式
 for p in range(P):
@@ -319,15 +327,10 @@ pi_t_bounds=[(None, None)] * P
 
 bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + pi_t_bounds
 
-print(b_ub)
-
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
 res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds)
 x = list(map(int, res.x))
 
-print(x)
 print(f"目的関数値: {res.fun}")
-
-
 debug(x)
