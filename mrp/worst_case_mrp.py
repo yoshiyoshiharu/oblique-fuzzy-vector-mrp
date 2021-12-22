@@ -70,10 +70,9 @@ def debug(A):
   print(f"I: {A[sum(V_SIZE):sum(V_SIZE)*2]}")
   print(f"x: {A[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]}")
   print(f"z: {A[sum(V_SIZE)*2 + (P * T):sum(V_SIZE)*3 + (P * T)]}")
-  print(f"v: {A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*4 + (P * T)]}")
-  print(f"pi_s: {A[sum(V_SIZE)*4 + (P * T):sum(V_SIZE)*4 + (P * T) + P]}")
-  print(f"pi: {A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*5 + (P * T) + P]}")
-  print(f"pi_t: {A[sum(V_SIZE)*5 + (P * T) + P:sum(V_SIZE)*5 + (P * T) + 2 * P]}")
+  print(f"pi_s: {A[sum(V_SIZE)*3 + (P * T):sum(V_SIZE)*3 + (P * T) + P]}")
+  print(f"pi: {A[sum(V_SIZE)*3 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + P]}")
+  print(f"pi_t: {A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + 2 * P]}")
 
 """--------------------------------LP-------------------------------------"""
 
@@ -123,9 +122,9 @@ for p in range(P):
       A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_eq.append(V[p][t][w])
 
-      print(f"----------(p, t, w) = ({p}, {t}, {w})" )
-      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-      print(f"b: {V[p][t][w]}")
+      # print(f"----------(p, t, w) = ({p}, {t}, {w})" )
+      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      # print(f"b: {V[p][t][w]}")
 
 # 2つ目の制約式
 A_ub = []
@@ -152,6 +151,9 @@ for p in range(P):
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
+
+    print(f"----------(p, t, w, u) = ({p}, 0, {w}, 0)" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_1 to pi_T-1
 for p in range(P):
@@ -294,7 +296,27 @@ for p in range(P):
 
 b_ub = np.zeros(len(A_ub))
 
+c = np.hstack([
+ np.zeros(sum(V_SIZE)), # B_w
+ np.zeros(sum(V_SIZE)), # I_w
+ np.zeros(P * T),       # x_t,p
+ np.zeros(sum(V_SIZE)), # z_w
+ np.zeros(P),           # pi_s
+ np.zeros(sum(V_SIZE)), # pi
+ np.ones(P)             # pi_t
+])
+
+B_bounds=[(0, None)] * sum(V_SIZE)
+I_bounds=[(0, None)] * sum(V_SIZE)
+x_bounds=[(0, None)] * (P * T)
+z_bounds=[(0, None)] * sum(V_SIZE)
+pi_s_bounds=[(None, None)] * P
+pi_bounds=[(None, None)] * sum(V_SIZE)
+pi_t_bounds=[(None, None)] * P
+
+bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + pi_t_bounds
+
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
-res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, method='revised simplex')
+res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method='revised simplex')
 print(res)
