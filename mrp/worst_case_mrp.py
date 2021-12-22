@@ -80,13 +80,13 @@ def debug(A):
   pi = A[sum(V_SIZE)*3 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + P]
   pi_t = A[sum(V_SIZE)*4 + (P * T) + P:sum(V_SIZE)*4 + (P * T) + 2 * P]
 
-  print(f"B: {B}")
-  print(f"I: {I}")
-  print(f"x: {x}")
-  print(f"z: {z}")
-  print(f"pi_s: {pi_s}")
-  print(f"pi: {pi}")
-  print(f"pi_t: {pi_t}")
+  if not np.all(B == 0): print(f"B: {B}")
+  if not np.all(I == 0): print(f"I: {I}")
+  if not np.all(x == 0): print(f"x: {x}")
+  if not np.all(z == 0): print(f"z: {z}")
+  if not np.all(pi_s == 0): print(f"pi_s: {pi_s}")
+  if not np.all(pi == 0): print(f"pi: {pi}")
+  if not np.all(pi_t == 0): print(f"pi_t: {pi_t}")
 
 """--------------------------------LP-------------------------------------"""
 
@@ -108,6 +108,8 @@ print(f"c: {c}")
 # 1つ目の制約式
 A_eq = []
 b_eq = []
+
+print("---------------------------------------1st constraint-------------------------------------------")
 for p in range(P):
   for t in range(T):
     for w in range(len(V[p][t])):
@@ -136,13 +138,14 @@ for p in range(P):
       A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_eq.append(V[p][t][w])
 
-      # print(f"----------(p, t, w) = ({p}, {t}, {w})" )
-      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-      # print(f"b: {V[p][t][w]}")
+      print(f"----------(p, t, w) = ({p}, {t}, {w})----------" )
+      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      print(f"b: {V[p][t][w]}")
 
 # 2つ目の制約式
 A_ub = []
 b_ub = []
+print("------------------------------------2nd constraint (pi_s to pi_1)-------------------------------")
 # pi_s to pi_1
 for p in range(P):
   for w in range(len(V[p][0])):
@@ -166,10 +169,11 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    # print(f"----------(p, t, w, u) = ({p}, 0, {ptw}, 0)" )
-    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    print(f"----------(p, t, w, u) = ({p}, 0, {ptw}, 0)----------" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_1 to pi_T-1
+print("------------------------------2nd constraint (pi_1 to pi_T-1)------------------------------")
 for p in range(P):
   for t in range(T - 1):
     for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][t]), enumerate(V[p][t + 1])):
@@ -196,10 +200,11 @@ for p in range(P):
         A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
         b_ub.append(0)
 
-        # print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})" )
-        # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+        print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})----------" )
+        debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # V_T-1 to V_T 3つめの制約式
+print("------------------------------3rd constraint (pi_T-1 to pi_T)------------------------------")
 for p in range(P):
   for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][T - 2]), enumerate(V[p][T - 1])):
     # initialize
@@ -229,11 +234,11 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    # print(f"----------(p, t, w, u) = ({p}, {T-1}, {ptu}, {ptw})" )
-    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    print(f"----------(p, t, w, u) = ({p}, {T-1}, {ptu}, {ptw})----------" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_u - pi_t 4本目の制約式
-
+print("----------------------------------------4th constraint----------------------------------------")
 for p in range(P):
   for u in range(len(V[p][T - 1])):
     # initialize
@@ -253,9 +258,10 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    # print(f"----------(p, t, w, u) = ({p}, {T}, {ptu}, t)" )
-    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    print(f"----------(p, t, w, u) = ({p}, {T}, {ptu}, t)----------" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
+print("-------------------------------------5th constraint------------------------------------------")
 # pi_s = 0 5本目の制約式
 for p in range(P):
   # initialize
@@ -271,9 +277,10 @@ for p in range(P):
 
   A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
   b_eq.append(0)
-  # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+  debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # z_w <= v_w 6本目の制約式
+print("-------------------------------------6th constraint---------------------------------------")
 for p in range(P):
   for w in range(len(V[p][T-1])):
     # initialize
@@ -291,10 +298,11 @@ for p in range(P):
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(V[p][T - 1][w])
-    # print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})" )
-    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})----------" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # 7本目の制約式
+print("-------------------------------------7th constraint---------------------------------------")
 for p in range(P):
   for w in range(len(V[p][T-1])):
     # initialize
@@ -320,8 +328,8 @@ for p in range(P):
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
-    # print(f"----------(p, t, w) = ({p}, {T}, {ptw})------------" )
-    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    print(f"----------(p, t, w) = ({p}, {T}, {ptw})------------" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # xの制約
 # 資源の制約
@@ -382,8 +390,8 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    print(f"----------(p, t) = ({p}, {t})" )
-    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    # print(f"----------(p, t) = ({p}, {t})----------" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 B_bounds=[(0, None)] * sum(V_SIZE)
 I_bounds=[(0, None)] * sum(V_SIZE)
