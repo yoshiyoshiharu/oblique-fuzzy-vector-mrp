@@ -15,6 +15,12 @@ c_B = list(map(lambda x: x * 0.15, b_P)) # backordering cost of product p
 b = [[0, 0, 0, 0], [2, 0, 0, 0], [1, 0, 0, 0], [0, 0, 2, 0]] # b_(i,j)amount of product i to produce product j
 Ld = [0, 0, 1, 0] # lead time of product p
 
+a = [[1, 0, 1], [2, 0, 0], [0, 2, 0], [0, 0, 1]] # a_(p,r) amount of resource r to produce product p 
+r_l = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]] # l_(t,r) lowwer resource r of period t
+r_u = [[2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000]] # u_(t,r)upper resource r of period t
+r_L = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]]
+r_U = [[2000, 2000, 2000], [4000, 4000, 4000], [6000, 6000, 6000], [8000, 8000, 8000]]
+
 D_intervals = [
   [
     [100, 600],
@@ -316,6 +322,42 @@ for p in range(P):
     b_ub.append(0)
     # print(f"----------(p, t, w) = ({p}, {T}, {ptw})------------" )
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+
+# xの制約
+for t in range(T):
+  for r in range(R):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(P)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(P)
+
+    for j in range(P):
+      t_j = j * P + t
+      x[t_j] = a[j][r]
+
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(r_u[t][r])
+
+    # print(f"----------(t, r) = ({t}, {r})------------" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    # print(f"u: {r_u[t][r]}")
+
+    x = np.zeros(P * T)
+    for j in range(P):
+      t_j = j * P + t
+      x[t_j] = -a[j][r]
+
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(r_l[t][r])
+
+    # print(f"----------(t, r) = ({t}, {r})------------" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    # print(f"l: {r_l[t][r]}")
+
 
 B_bounds=[(0, None)] * sum(V_SIZE)
 I_bounds=[(0, None)] * sum(V_SIZE)
