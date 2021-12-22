@@ -126,7 +126,7 @@ for p in range(P):
       I[ptw] = -1
       
       for i in range(t + 1):
-        p_i = p * T + i
+        p_i = p * P + i
         x[p_i] += 1
         for j in range(P):
           j_i_Ldj = (i + Ld[j]) + j * P
@@ -324,6 +324,7 @@ for p in range(P):
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # xの制約
+# 資源の制約
 for t in range(T):
   for r in range(R):
     # initialize
@@ -358,6 +359,31 @@ for t in range(T):
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     # print(f"l: {r_l[t][r]}")
 
+# 内部需要の制約
+for p in range(P):
+  for t in range(T):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(P)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(P)
+
+    for i in range(t + 1):
+      p_i = p * P + i
+      x[p_i] -= 1
+      for j in range(P):
+        j_i_Ldj = (i + Ld[j]) + j * P
+        if i + Ld[j] < T:
+          x[j_i_Ldj] += b[p][j]
+
+    A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_ub.append(0)
+
+    print(f"----------(p, t) = ({p}, {t})" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 B_bounds=[(0, None)] * sum(V_SIZE)
 I_bounds=[(0, None)] * sum(V_SIZE)
