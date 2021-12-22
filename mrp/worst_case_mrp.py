@@ -234,7 +234,7 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    print(f"----------(p, t, w, u) = ({p}, {T-1}, {ptu}, {ptw})----------" )
+    print(f"----------(p, t, u, w) = ({p}, {T-1}, {ptu}, {ptw})----------" )
     debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_u - pi_t 4本目の制約式
@@ -392,6 +392,25 @@ for p in range(P):
 
     # print(f"----------(p, t) = ({p}, {t})----------" )
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+
+# 0 ~ Ldまではその生産量は0という制約式を加える
+Ld_constraint = []
+for p in range(P):
+  for i in range(Ld[p]):
+    # initialize
+    B = np.zeros(sum(V_SIZE))
+    I = np.zeros(sum(V_SIZE))
+    x = np.zeros(P * T)
+    z = np.zeros(sum(V_SIZE))
+    pi_s = np.zeros(P)
+    pi = np.zeros(sum(V_SIZE))
+    pi_t = np.zeros(P)
+
+    p_i = p * P + i
+    x[p_i] = 1
+
+    A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    b_eq.append(0)
 
 B_bounds=[(0, None)] * sum(V_SIZE)
 I_bounds=[(0, None)] * sum(V_SIZE)
