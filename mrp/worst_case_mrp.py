@@ -152,8 +152,8 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    print(f"----------(p, t, w, u) = ({p}, 0, {w}, 0)" )
-    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    # print(f"----------(p, t, w, u) = ({p}, 0, {ptw}, 0)" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_1 to pi_T-1
 for p in range(P):
@@ -182,6 +182,9 @@ for p in range(P):
         A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
         b_ub.append(0)
 
+        # print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})" )
+        # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+
 # V_T-1 to V_T 3つめの制約式
 for p in range(P):
   for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][T - 2]), enumerate(V[p][T - 1])):
@@ -203,7 +206,7 @@ for p in range(P):
     z[ptw] = -b_P[p]
 
     pi[ptu] = 1
-    pi[ptu] = -1
+    pi[ptw] = -1
 
     for i in range(T):
       p_i = p * T + i
@@ -211,6 +214,9 @@ for p in range(P):
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
+
+    # print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # pi_u - pi_t 4本目の制約式
 
@@ -233,6 +239,9 @@ for p in range(P):
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
+    # print(f"----------(p, t, w, u) = ({p}, {T}, {ptu}, t)" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+
 # pi_s = 0 5本目の制約式
 for p in range(P):
   # initialize
@@ -247,9 +256,10 @@ for p in range(P):
   pi_s[p] = 1
 
   A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-  b_eq = np.append(b_eq, 0)
+  b_eq.append(0)
+  # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
-# z_w - v_w 6本目の制約式
+# z_w <= v_w 6本目の制約式
 for p in range(P):
   for w in range(len(V[p][T-1])):
     # initialize
@@ -266,7 +276,9 @@ for p in range(P):
     z[ptw] = 1
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-    b_ub.append(V[p][t][w])
+    b_ub.append(V[p][T - 1][w])
+    print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})" )
+    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # 7本目の制約式
 for p in range(P):
@@ -293,18 +305,9 @@ for p in range(P):
           x[j_i_Ldj] += b[p][j]
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-
-b_ub = np.zeros(len(A_ub))
-
-c = np.hstack([
- np.zeros(sum(V_SIZE)), # B_w
- np.zeros(sum(V_SIZE)), # I_w
- np.zeros(P * T),       # x_t,p
- np.zeros(sum(V_SIZE)), # z_w
- np.zeros(P),           # pi_s
- np.zeros(sum(V_SIZE)), # pi
- np.ones(P)             # pi_t
-])
+    b_ub.append(0)
+    # print(f"----------(p, t, w) = ({p}, {T}, {ptw})------------" )
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 B_bounds=[(0, None)] * sum(V_SIZE)
 I_bounds=[(0, None)] * sum(V_SIZE)
@@ -316,7 +319,15 @@ pi_t_bounds=[(None, None)] * P
 
 bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + pi_t_bounds
 
+print(b_ub)
+
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
-res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method='revised simplex')
-print(res)
+res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds)
+x = list(map(int, res.x))
+
+print(x)
+print(f"目的関数値: {res.fun}")
+
+
+debug(x)
