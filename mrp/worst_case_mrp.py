@@ -3,8 +3,8 @@ import itertools
 import numpy as np
 
 """---------------------初期データ-----------------------"""
-P = 4
-T = 4
+P = 2
+T = 2
 R = 3
 
 c_P = [1000, 600, 500, 100] # production cost of product p
@@ -23,17 +23,17 @@ r_U = [[2000, 2000, 2000], [4000, 4000, 4000], [6000, 6000, 6000], [8000, 8000, 
 
 D_intervals = [
   [
-    [100, 600],
-    [400, 800],
-    [500, 1000],
-    [800, 1600]
+    [100, 200],
+    [400, 600],
+    [800, 1000],
+    [1000, 1200]
   ],
 
   [
     [200, 400],
-    [300, 1000],
-    [900, 1500],
-    [1900, 2100]
+    [600, 800],
+    [1000, 1200],
+    [1200, 1400]
   ]
 ]
 
@@ -99,6 +99,7 @@ z = np.zeros(sum(V_SIZE))
 pi_s = np.zeros(P)
 pi = np.zeros(sum(V_SIZE))
 pi_t = np.ones(P)
+
 c = np.hstack([B, I, x, z, pi_s, pi, pi_t])
 
 print(f"c: {c}")
@@ -127,10 +128,10 @@ for p in range(P):
       I[ptw] = -1
       
       for i in range(t + 1):
-        p_i = p * P + i
+        p_i = p * T + i
         x[p_i] += 1
         for j in range(P):
-          j_i_Ldj = (i + Ld[j]) + j * P
+          j_i_Ldj = (i + Ld[j]) + j * T
           if i + Ld[j] < T:
             x[j_i_Ldj] -= b[p][j]
       
@@ -321,7 +322,7 @@ for p in range(P):
       p_i = p * T + i
       x[p_i] -= 1
       for j in range(P):
-        j_i_Ldj = (i + Ld[j]) + j * P
+        j_i_Ldj = (i + Ld[j]) + j * T
         if i + Ld[j] < T:
           x[j_i_Ldj] += b[p][j]
 
@@ -344,7 +345,7 @@ for t in range(T):
     pi_t = np.zeros(P)
 
     for j in range(P):
-      t_j = j * P + t
+      t_j = j * T + t
       x[t_j] = a[j][r]
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
@@ -356,7 +357,7 @@ for t in range(T):
 
     x = np.zeros(P * T)
     for j in range(P):
-      t_j = j * P + t
+      t_j = j * T + t
       x[t_j] = -a[j][r]
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
@@ -379,10 +380,10 @@ for p in range(P):
     pi_t = np.zeros(P)
 
     for i in range(t + 1):
-      p_i = p * P + i
+      p_i = p * T + i
       x[p_i] -= 1
       for j in range(P):
-        j_i_Ldj = (i + Ld[j]) + j * P
+        j_i_Ldj = (i + Ld[j]) + j * T
         if i + Ld[j] < T:
           x[j_i_Ldj] += b[p][j]
 
