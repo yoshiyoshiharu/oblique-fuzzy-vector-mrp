@@ -3,8 +3,8 @@ import itertools
 import numpy as np
 
 """---------------------初期データ-----------------------"""
-P = 2
-T = 2
+P = 4
+T = 4
 R = 3
 
 c_P = [1000, 600, 500, 100] # production cost of product p
@@ -23,17 +23,17 @@ r_U = [[2000, 2000, 2000], [4000, 4000, 4000], [6000, 6000, 6000], [8000, 8000, 
 
 D_intervals = [
   [
-    [100, 200],
-    [400, 600],
-    [800, 1000],
-    [1000, 1200]
+    [100, 600],
+    [400, 800],
+    [500, 1000],
+    [800, 1600]
   ],
 
   [
     [200, 400],
-    [600, 800],
-    [1000, 1200],
-    [1200, 1400]
+    [300, 1000],
+    [900, 1500],
+    [1900, 2100]
   ]
 ]
 
@@ -175,7 +175,7 @@ for p in range(P):
 # pi_1 to pi_T-1
 print("------------------------------2nd constraint (pi_1 to pi_T-1)------------------------------")
 for p in range(P):
-  for t in range(T - 1):
+  for t in range(T - 2):
     for (u_index, u_value), (w_index, w_value) in itertools.product(enumerate(V[p][t]), enumerate(V[p][t + 1])):
       # print(u_index, u_value, w_index, w_value)
       if u_value <= w_value:
@@ -424,7 +424,7 @@ bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + p
 
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
-res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds)
+res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method='revised simplex')
 x = list(map(int, res.x))
 
 print(f"目的関数値: {res.fun}")

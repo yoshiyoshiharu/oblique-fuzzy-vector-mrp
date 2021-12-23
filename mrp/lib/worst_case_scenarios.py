@@ -17,6 +17,6 @@ def worst_case_scenarios(T, D_interval):
 
   import itertools
 
-  D_S = [S for S in list(itertools.product(V[0], V[1], V[2])) if S[0] <= S[1] <= S[2]]
+  D_S = [S for S in list(itertools.product(V[0], V[1], V[2], V[3])) if S[0] <= S[1] <= S[2] <= S[3]]
 
   return D_S
