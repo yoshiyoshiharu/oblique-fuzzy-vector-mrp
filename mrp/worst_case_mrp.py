@@ -92,15 +92,14 @@ def debug(A):
 
 """---------------------目的関数-----------------------"""
 # 目的関数
-c = np.hstack([
- np.zeros(sum(V_SIZE)), # B_w
- np.zeros(sum(V_SIZE)), # I_w
- np.zeros(P * T),       # x_t,p
- np.zeros(sum(V_SIZE)), # z_w
- np.zeros(P),           # pi_s
- np.zeros(sum(V_SIZE)), # pi
- np.ones(P)             # pi_t
-])
+B = np.zeros(sum(V_SIZE))
+I = np.zeros(sum(V_SIZE))
+x = np.zeros(P * T)
+z = np.zeros(sum(V_SIZE))
+pi_s = np.zeros(P)
+pi = np.zeros(sum(V_SIZE))
+pi_t = np.ones(P)
+c = np.hstack([B, I, x, z, pi_s, pi, pi_t])
 
 print(f"c: {c}")
 
@@ -138,7 +137,7 @@ for p in range(P):
       A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_eq.append(V[p][t][w])
 
-      print(f"----------(p, t, w) = ({p}, {t}, {w})----------" )
+      print(f"----------(p, t, w) = ({p}, {t}, {ptw})----------" )
       debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       print(f"b: {V[p][t][w]}")
 
