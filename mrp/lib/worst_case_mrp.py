@@ -16,9 +16,9 @@ Ld = [0, 0, 1, 0] # lead time of product p
 
 a = [[1, 0, 1], [2, 0, 0], [0, 2, 0], [0, 0, 1]] # a_(p,r) amount of resource r to produce product p 
 r_l = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]] # l_(t,r) lowwer resource r of period t
-r_u = [[2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000], [2000, 2000, 2000]] # u_(t,r)upper resource r of period t
+r_u = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]] # u_(t,r)upper resource r of period t
 r_L = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]]
-r_U = [[2000, 2000, 2000], [4000, 4000, 4000], [6000, 6000, 6000], [8000, 8000, 8000]]
+r_U = [[10000, 10000, 10000], [20000, 20000, 20000], [30000, 30000, 30000], [40000, 40000, 40000]]
 
 def worst_case_mrp(V):
 
@@ -108,9 +108,9 @@ def worst_case_mrp(V):
         A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
         b_eq.append(V[p][t][w])
 
-        print(f"----------(p, t, w) = ({p}, {t}, {ptw})----------" )
-        debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-        print(f"b: {V[p][t][w]}")
+        # print(f"----------(p, t, w) = ({p}, {t}, {ptw})----------" )
+        # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+        # print(f"b: {V[p][t][w]}")
 
   # 2つ目の制約式
   A_ub = []
@@ -139,8 +139,8 @@ def worst_case_mrp(V):
       A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_ub.append(0)
 
-      print(f"----------(p, t, w, u) = ({p}, 0, {ptw}, 0)----------" )
-      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      # print(f"----------(p, t, w, u) = ({p}, 0, {ptw}, 0)----------" )
+      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # pi_1 to pi_T-1
   print("------------------------------2nd constraint (pi_1 to pi_T-1)------------------------------")
@@ -170,8 +170,8 @@ def worst_case_mrp(V):
           A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
           b_ub.append(0)
 
-          print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})----------" )
-          debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+          # print(f"----------(p, t, w, u) = ({p}, {t}, {ptu}, {ptw})----------" )
+          # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # V_T-1 to V_T 3つめの制約式
   print("------------------------------3rd constraint (pi_T-1 to pi_T)------------------------------")
@@ -204,8 +204,8 @@ def worst_case_mrp(V):
       A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_ub.append(0)
 
-      print(f"----------(p, t, u, w) = ({p}, {T-1}, {ptu}, {ptw})----------" )
-      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      # print(f"----------(p, t, u, w) = ({p}, {T-1}, {ptu}, {ptw})----------" )
+      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # pi_u - pi_t 4本目の制約式
   print("----------------------------------------4th constraint----------------------------------------")
@@ -228,8 +228,8 @@ def worst_case_mrp(V):
       A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_ub.append(0)
 
-      print(f"----------(p, t, w, u) = ({p}, {T}, {ptu}, t)----------" )
-      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      # print(f"----------(p, t, w, u) = ({p}, {T}, {ptu}, t)----------" )
+      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   print("-------------------------------------5th constraint------------------------------------------")
   # pi_s = 0 5本目の制約式
@@ -247,7 +247,7 @@ def worst_case_mrp(V):
 
     A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_eq.append(0)
-    debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+    # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # z_w <= v_w 6本目の制約式
   print("-------------------------------------6th constraint---------------------------------------")
@@ -268,8 +268,8 @@ def worst_case_mrp(V):
 
       A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_ub.append(V[p][T - 1][w])
-      print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})----------" )
-      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      # print(f"----------(p, t, w, v) = ({p}, {T}, {ptw}, {V[p][T - 1][w]})----------" )
+      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # 7本目の制約式
   print("-------------------------------------7th constraint---------------------------------------")
@@ -298,8 +298,8 @@ def worst_case_mrp(V):
 
       A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_ub.append(0)
-      print(f"----------(p, t, w) = ({p}, {T}, {ptw})------------" )
-      debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      # print(f"----------(p, t, w) = ({p}, {T}, {ptw})------------" )
+      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # xの制約
   # 資源の制約
