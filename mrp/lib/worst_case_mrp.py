@@ -72,7 +72,7 @@ def worst_case_mrp(V):
 
   c = np.hstack([B, I, x, z, pi_s, pi, pi_t])
 
-  print(f"c: {c}")
+  # print(f"c: {c}")
 
   """---------------------制約式-----------------------"""
   # 1つ目の制約式
