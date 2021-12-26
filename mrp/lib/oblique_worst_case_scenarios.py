@@ -16,16 +16,19 @@ def worst_case_scenarios(T, delta_intervals):
     for j in range(i + 1):
       B[i][j] = 1
 
-  M = A @ np.linalg.inv(B)
+  B_inv = np.linalg.inv(B)
+
+  M = A @ B_inv
+
   M_inv = np.linalg.inv(M)
 
-  delta_scenarios = []
+  delta_vertexes = []
   for v in itertools.product(delta_intervals[0], delta_intervals[1], delta_intervals[2], delta_intervals[3]):
-    delta_scenarios.append(v)
+    delta_vertexes.append(v)
 
   D_scenarios = []
 
-  for delta_vertex in delta_scenarios:
-    D_scenarios.append(M_inv @ delta_vertex)
+  for delta_vertex in delta_vertexes:
+    D_scenarios.append(np.round(M_inv @ delta_vertex).tolist())
 
   return D_scenarios
