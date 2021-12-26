@@ -29,12 +29,12 @@ delta_intervals = [
     [8000, 10000]
   ], 
 
-  # [
-  #   [2000, 3000],
-  #   [1000, 1500],
-  #   [-2000, -1000],
-  #   [12000, 14000]
-  # ]
+  [
+    [2000, 3000],
+    [1000, 1500],
+    [-2000, -1000],
+    [12000, 14000]
+  ]
 ]
 
 """-------------------準備-----------------------"""
@@ -233,7 +233,7 @@ for p in range(P):
 # pi_u - pi_t 4本目の制約式
 print("----------------------------------------4th constraint----------------------------------------")
 for p in range(P):
-  for u in range(len(V[p][T - 1])):
+  for s in range(len(S[p])):
     # initialize
     B = np.zeros(sum(V_SIZE))
     I = np.zeros(sum(V_SIZE))
@@ -243,15 +243,15 @@ for p in range(P):
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
 
-    ptu = index(p, T - 1, u, V)
+    pstu = index(p, s, T - 1, S)
 
-    pi[ptu] = 1
+    pi[pstu] = 1
     pi_t[p] = -1
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
     b_ub.append(0)
 
-    # print(f"----------(p, t, w, u) = ({p}, {T}, {ptu}, t)----------" )
+    # print(f"----------(p, t, w, u) = ({p}, {T}, {pstu}, t)----------" )
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 print("-------------------------------------5th constraint------------------------------------------")
@@ -275,7 +275,7 @@ for p in range(P):
 # z_w <= v_w 6本目の制約式
 print("-------------------------------------6th constraint---------------------------------------")
 for p in range(P):
-  for w in range(len(V[p][T-1])):
+  for s in range(len(S[p])):
     # initialize
     B = np.zeros(sum(V_SIZE))
     I = np.zeros(sum(V_SIZE))
@@ -285,19 +285,19 @@ for p in range(P):
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
 
-    pst = index(p, T - 1, w, V)
+    pst = index(p, s, T - 1, S)
 
     z[pst] = 1
 
     A_ub.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-    b_ub.append(V[p][T - 1][w])
-    # print(f"----------(p, t, w, v) = ({p}, {T}, {pst}, {V[p][T - 1][w]})----------" )
+    b_ub.append(S[p][s][T-1])
+    # print(f"----------(p, t, w, v) = ({p}, {T}, {pst}, {S[p][s][T-1]})----------" )
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
 # 7本目の制約式
 print("-------------------------------------7th constraint---------------------------------------")
 for p in range(P):
-  for w in range(len(V[p][T-1])):
+  for s in range(len(S[p])):
     # initialize
     B = np.zeros(sum(V_SIZE))
     I = np.zeros(sum(V_SIZE))
@@ -307,7 +307,7 @@ for p in range(P):
     pi = np.zeros(sum(V_SIZE))
     pi_t = np.zeros(P)
 
-    pst = index(p, T - 1, w, V)
+    pst = index(p, s, T - 1, S)
 
     z[pst] = 1
 
