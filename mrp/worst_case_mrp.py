@@ -424,7 +424,7 @@ bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + p
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
 res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method='revised simplex')
-x = list(map(int, res.x))
+x = res.x
 
 print(f"目的関数値: {res.fun}")
 debug(x)
