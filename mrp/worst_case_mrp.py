@@ -1,6 +1,5 @@
 import itertools
 import numpy as np
-from lib import worst_case_scenarios
 
 """---------------------初期データ-----------------------"""
 P = 12
@@ -8,7 +7,7 @@ T = 23
 R = 3
 
 c_P = [1000, 500, 600, 100, 200, 100, 80, 100, 120, 100, 130, 120] # production cost of product p
-b_P = [10000, 5500, 0, 0, 0, 0, 0, 0 ,0 ,0 , 0 ,0] # sales price of product p 
+b_P = [10000, 5500, 0, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0] # sales price of product p 
 c_I = list(map(lambda x: x * 0.05, c_P)) # inventory cost of product p
 c_B = list(map(lambda x: x * 0.15, b_P)) # backordering cost of product p
 
@@ -107,27 +106,10 @@ D_nominals = []
 for d_nominal in d_nominals:
   array = []
   for i in range(len(d_nominal)):
-    array.append(sum(d_nominal[0:i]))
+    array.append(sum(d_nominal[0:i+1]))
   D_nominals.append(array)
 
-print(D_nominals)
-
-alpha = 0.1
-
-D_intervals = [
-  [
-    [0, 1875],
-    [2000, 4750],
-    [5500, 8125],
-    [8000, 10000]
-  ], 
-  [
-    [250, 2000],
-    [3500, 6000],
-    [8250, 11000],
-    [12000, 14000]
-  ]
-]
+alpha = 0.05
 
 D_intervals = []
 for D_nominal in D_nominals:
@@ -136,15 +118,28 @@ for D_nominal in D_nominals:
     intervals.append([D - alpha * D, D + alpha * D])
   D_intervals.append(intervals)
 
+# print(D_intervals)
+
 """-------------------準備-----------------------"""
 V = [[[] for _ in range(T)] for _ in range(P)]
 
+
 for p in range(len(D_intervals)):
-  for i in range(T):
-    for S in worst_case_scenarios.worst_case_scenarios(T, D_intervals[p]):
-      if S[i] not in V[p][i]:
-        V[p][i].append(S[i])
-    V[p][i].sort()
+  for t in range(T):
+    for i in range(0, t):
+      if D_intervals[p][i][1] > D_intervals[p][t][0] and D_intervals[p][i][1] not in V[p][t]:
+        V[p][t].append(D_intervals[p][i][1])
+
+    if D_intervals[p][t][0] not in V[p][t]:
+      V[p][t].append(D_intervals[p][t][0])
+    if D_intervals[p][t][1] not in V[p][t]:
+      V[p][t].append(D_intervals[p][t][1])
+
+    for i in range(t, T):
+      if D_intervals[p][i][0] < D_intervals[p][t][1] and D_intervals[p][i][0] not in V[p][t]:
+        V[p][t].append(D_intervals[p][i][0])
+    
+    V[p][t].sort()
 
 for p in range(P):
   for v in V[p]:
@@ -156,6 +151,7 @@ for p in range(P):
   V_SIZE[p] = sum(len(v) for v in V[p])
 
 print(f"V : {V}")
+print(f"V_SIZE : {V_SIZE}")
 """---------------------関数-----------------------"""
 def index(current_p, current_t, current_w, V):
   index = 0
@@ -237,9 +233,10 @@ for p in range(P):
       A_eq.append(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
       b_eq.append(V[p][t][w])
 
-      # print(f"----------(p, t, w) = ({p}, {t}, {ptw})----------" )
-      # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
-      # print(f"b: {V[p][t][w]}")
+      # if ptw < 8:
+      #   print(f"----------(p, t, ptw) = ({p}, {t}, {ptw})----------" )
+      #   debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
+      #   print(f"b: {V[p][t][w]}")
 
 # 2つ目の制約式
 A_ub = []
@@ -523,7 +520,7 @@ bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + p
 
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
-res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method='revised simplex')
+res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds)
 x = res.x
 
 print(f"目的関数値: {res.fun}")
