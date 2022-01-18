@@ -1,6 +1,5 @@
 import itertools
 import numpy as np
-from lib import worst_case_mrp
 
 def worst_case_scenarios(T, delta_intervals):
   # -1, 1...のやつ
@@ -23,7 +22,7 @@ def worst_case_scenarios(T, delta_intervals):
   M_inv = np.linalg.inv(M)
 
   delta_vertexes = []
-  for v in itertools.product(delta_intervals[0], delta_intervals[1], delta_intervals[2], delta_intervals[3]):
+  for v in itertools.product(delta_intervals[0], delta_intervals[1], delta_intervals[2], delta_intervals[3], delta_intervals[4], delta_intervals[5], delta_intervals[6], delta_intervals[7]):
     delta_vertexes.append(v)
 
   D_scenarios = []

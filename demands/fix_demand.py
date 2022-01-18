@@ -32,3 +32,10 @@ from scipy.optimize import linprog
 
 res = linprog(c, A_ub=A, b_ub=b, bounds=bounds)
 print(res)
+x = res.x
+
+for i in range(T):
+  print(f"e_{i + 1}^- = {x[i]}")
+
+for i in range(T, 2 * T):
+  print(f"e_{i - T + 1}^+ = {x[i]}")

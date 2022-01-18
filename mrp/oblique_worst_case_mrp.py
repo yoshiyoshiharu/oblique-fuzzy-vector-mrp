@@ -3,29 +3,77 @@ import numpy as np
 from lib import oblique_worst_case_scenarios
 
 """---------------------初期データ-----------------------"""
-P = 4
-T = 4
+P = 12
+T = 8
 R = 3
 
-c_P = [1000, 600, 500, 100] # production cost of product p
-b_P = [10000, 5500, 0, 0] # sales price of product p 
+c_P = [1000, 500, 600, 100, 200, 100, 80, 100, 120, 100, 130, 120] # production cost of product p
+b_P = [10000, 5500, 0, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0] # sales price of product p 
 c_I = list(map(lambda x: x * 0.05, c_P)) # inventory cost of product p
 c_B = list(map(lambda x: x * 0.15, b_P)) # backordering cost of product p
 
-b = [[0, 0, 0, 0], [2, 0, 0, 0], [1, 0, 0, 0], [0, 0, 2, 0]] # b_(i,j)amount of product i to produce product j
-Ld = [0, 0, 1, 0] # lead time of product p
+b = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+  [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+  [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+] # b_(i,j)amount of product i to produce product j
 
-a = [[1, 0, 1], [2, 0, 0], [0, 2, 0], [0, 0, 1]] # a_(p,r) amount of resource r to produce product p 
-r_l = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]] # l_(t,r) lowwer resource r of period t
-r_u = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]] # u_(t,r)upper resource r of period t
-r_L = [[0, 0, 0], [0, 0 ,0], [0, 0, 0], [0, 0, 0]]
-r_U = [[10000, 10000, 10000], [20000, 20000, 20000], [30000, 30000, 30000], [40000, 40000, 40000]]
+Ld = [0, 2, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0] # lead time of product p
+
+a = [
+  [1, 0, 0], 
+  [0, 2, 0], 
+  [0, 0, 1], 
+  [0, 2, 0],
+  [0, 3, 0],
+  [0, 0, 2],
+  [0, 0, 2],
+  [0, 0, 1],
+  [0, 1, 0],
+  [0, 1, 0],
+  [0, 0, 1],
+  [0, 0, 2]
+] # a_(p,r) amount of resource r to produce product p 
+
+r_l = [
+  [0, 0, 0], 
+  [0, 0 ,0], 
+  [1000, 2000, 2000],
+  [1000, 2000, 2000],
+  [1000, 2000, 2000],
+  [1000, 2000, 2000],
+  [1000, 2000, 2000],
+  [1000, 2000, 2000]
+] # l_(t,r) lowwer resource r of period t
+r_u = [
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300], 
+  [10000, 9100, 10300]
+] # u_(t,r)upper resource r of period t
 
 delta_intervals = [
   [
     [1000, 2000],
     [500, 1500],
     [-1500, -1000],
+    [1000, 2000],
+    [1000, 2000],
+    [1000, 2000],
+    [500, 1500],
     [8000, 10000]
   ], 
 
@@ -33,6 +81,10 @@ delta_intervals = [
     [2000, 3000],
     [1000, 1500],
     [-2000, -1000],
+    [2000, 3000],
+    [1000, 1500],
+    [1000, 1500],
+    [1000, 1500],
     [12000, 14000]
   ]
 ]
@@ -417,7 +469,7 @@ bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + p
 
 """----------------------------LP解く------------------------------------"""
 from scipy.optimize import linprog
-res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method='revised simplex')
+res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds)
 x = list(map(int, res.x))
 
 print(f"目的関数値: {res.fun}")
