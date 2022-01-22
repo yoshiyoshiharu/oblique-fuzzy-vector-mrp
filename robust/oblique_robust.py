@@ -4,7 +4,6 @@ P = 12
 T = 23
 R = 3
 
-
 c_P = [1000, 500, 600, 100, 200, 100, 80, 100, 120, 100, 130, 120] # production cost of product p
 b_P = [10000, 5500, 0, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0] # sales price of product p 
 c_I = list(map(lambda x: x * 0.05, c_P)) # inventory cost of product p
@@ -155,7 +154,7 @@ def main(U):
   A_eq = []
   b_eq = []
 
-  print("---------------------------------------1st constraint-------------------------------------------")
+  # print("---------------------------------------1st constraint-------------------------------------------")
   for p in range(P):
     for s in range(len(U[p])):
       for t in range(T):
@@ -191,7 +190,7 @@ def main(U):
   # 2つ目の制約式
   A_ub = []
   b_ub = []
-  print("------------------------------------2nd constraint (pi_s to pi_1)-------------------------------")
+  # print("------------------------------------2nd constraint (pi_s to pi_1)-------------------------------")
   # pi_s to pi_1
   for p in range(P):
     for s in range(len(U[p])):
@@ -219,7 +218,7 @@ def main(U):
       # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # pi_1 to pi_T-1
-  print("------------------------------2nd constraint (pi_1 to pi_T-1)------------------------------")
+  # print("------------------------------2nd constraint (pi_1 to pi_T-1)------------------------------")
   for p in range(P):
     for s in range(len(U[p])):
       for t in range(T - 2):
@@ -248,7 +247,7 @@ def main(U):
         # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # V_T-1 to V_T 3つめの制約式
-  print("------------------------------3rd constraint (pi_T-1 to pi_T)------------------------------")
+  # print("------------------------------3rd constraint (pi_T-1 to pi_T)------------------------------")
   for p in range(P):
     for s in range(len(U[p])):
       # initialize
@@ -282,7 +281,7 @@ def main(U):
       # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # pi_u - pi_t 4本目の制約式
-  print("----------------------------------------4th constraint----------------------------------------")
+  # print("----------------------------------------4th constraint----------------------------------------")
   for p in range(P):
     for s in range(len(U[p])):
       # initialize
@@ -305,7 +304,7 @@ def main(U):
       # print(f"----------(p, t, w, u) = ({p}, {T}, {pstu}, t)----------" )
       # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
-  print("-------------------------------------5th constraint------------------------------------------")
+  # print("-------------------------------------5th constraint------------------------------------------")
   # pi_s = 0 5本目の制約式
   for p in range(P):
     # initialize
@@ -324,7 +323,7 @@ def main(U):
     # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # z_w <= v_w 6本目の制約式
-  print("-------------------------------------6th constraint---------------------------------------")
+  # print("-------------------------------------6th constraint---------------------------------------")
   for p in range(P):
     for s in range(len(U[p])):
       # initialize
@@ -346,7 +345,7 @@ def main(U):
       # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
   # 7本目の制約式
-  print("-------------------------------------7th constraint---------------------------------------")
+  # print("-------------------------------------7th constraint---------------------------------------")
   for p in range(P):
     for s in range(len(U[p])):
       # initialize
@@ -377,7 +376,7 @@ def main(U):
 
   # xの制約
   # 資源の制約
-  print("-------------------------------------resource constraint---------------------------------------")
+  # print("-------------------------------------resource constraint---------------------------------------")
   for t in range(T):
     for r in range(R):
       # initialize
@@ -413,7 +412,7 @@ def main(U):
       # print(f"l: {r_l[t][r]}")
 
   # 内部需要の制約
-  print("-------------------------------------internal demand constraint---------------------------------------")
+  # print("-------------------------------------internal demand constraint---------------------------------------")
   for p in range(P):
     for t in range(T):
       # initialize
@@ -439,7 +438,7 @@ def main(U):
       # print(f"----------(p, t) = ({p}, {t})----------" )
       # debug(np.hstack([B, I, x, z, pi_s, pi, pi_t]))
 
-  print("-------------------------------------Leadtime constraint---------------------------------------")
+  # print("-------------------------------------Leadtime constraint---------------------------------------")
   # 0 ~ Ldまではその生産量は0という制約式を加える
   Ld_constraint = []
   for p in range(P):
@@ -475,7 +474,9 @@ def main(U):
   """----------------------------LP解く------------------------------------"""
   from scipy.optimize import linprog
   res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method="revised simplex")
-  x = list(map(round, res.x))
+  # x = list(map(round, res.x))
 
-  print(f"目的関数値: {res.fun}")
-  debug(x)
+  # print(f"目的関数値: {res.fun}")
+  # debug(x)
+
+  return res

@@ -57,4 +57,14 @@ for p in range(P):
     S_0.append(delta_intervals[p][i][0])
   U[p].append(np.round(M_inv @ S_0))
 
-oblique_robust.main(U)
+res = oblique_robust.main(U)
+
+V_SIZE = [0] * P
+for p in range(P):
+  V_SIZE[p] = sum(len(v) for v in U[p])
+
+c1 = res.fun
+x = res.x[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]
+
+print(c1)
+print(list(map(round, x)))
