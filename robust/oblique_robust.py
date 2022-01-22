@@ -484,15 +484,30 @@ def main(U):
 """------------------max S from fixed x---------------"""
 
 def sub(x):
-  print(f"x: {list(map(round, x))}")
+  # print(f"x: {list(map(round, x))}")
 
   # 最後にこれを足すの忘れずに！！！！！！！１
   all_x_cost = 0
   for p in range(P):
     all_x_cost += sum(x[p * T:(p + 1) * T - 1])
   
-  print(all_x_cost)
+  # print(all_x_cost)
 
-  c = c_I * T + c_B * T+ list(map(lambda x: x * -1, b_P)) * T
+  # 目的関数
+  c = []
+  for p in range(P):
+    for t in range(T):
+      c.append(c_I[p])
+  for p in range(P):
+    for t in range(T):
+      c.append(c_B[p])
+  for p in range(P):
+    for t in range(T):
+      c.append(-b_P[p])
+  
+  print(c)
 
-  # print(c)
+  print("-------------------1st constraint-------------------")
+
+
+  print("-------------------2nd constraint-------------------")
