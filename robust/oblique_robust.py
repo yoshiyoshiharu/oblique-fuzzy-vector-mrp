@@ -486,28 +486,31 @@ def main(U):
 def sub(x):
   # print(f"x: {list(map(round, x))}")
 
-  # 最後にこれを足すの忘れずに！！！！！！！１
+  # 最後にこれを足すの忘れずに
   all_x_cost = 0
   for p in range(P):
     all_x_cost += sum(x[p * T:(p + 1) * T - 1])
   
   # print(all_x_cost)
 
-  # 目的関数
+  # 目的関数が負になっていることに注意する
   c = []
   for p in range(P):
     for t in range(T):
-      c.append(c_I[p])
+      c.append(-c_I[p])
   for p in range(P):
     for t in range(T):
-      c.append(c_B[p])
+      c.append(-c_B[p])
   for p in range(P):
     for t in range(T):
-      c.append(-b_P[p])
+      c.append(b_P[p])
+  for p in range(P):
+    for t in range(T):
+      c.append(0) # Dの分
   
   print(c)
 
   print("-------------------1st constraint-------------------")
-
+  
 
   print("-------------------2nd constraint-------------------")
