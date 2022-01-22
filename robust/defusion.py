@@ -57,6 +57,7 @@ for p in range(P):
     S_0.append(delta_intervals[p][i][0])
   U[p].append(np.round(M_inv @ S_0))
 
+"""-------------solve robust--------------"""
 res = oblique_robust.main(U)
 
 V_SIZE = [0] * P
@@ -66,5 +67,11 @@ for p in range(P):
 c1 = res.fun
 x = res.x[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]
 
-print(c1)
-print(list(map(round, x)))
+# print(c1)
+# print(list(map(round, x)))
+
+# xをpずつに分割する
+
+"""----------------max S from x^k --------------"""
+
+oblique_robust.sub(x)

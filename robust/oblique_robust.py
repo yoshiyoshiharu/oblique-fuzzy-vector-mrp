@@ -480,3 +480,19 @@ def main(U):
   # debug(x)
 
   return res
+
+"""------------------max S from fixed x---------------"""
+
+def sub(x):
+  print(f"x: {list(map(round, x))}")
+
+  # 最後にこれを足すの忘れずに！！！！！！！１
+  all_x_cost = 0
+  for p in range(P):
+    all_x_cost += sum(x[p * T:(p + 1) * T - 1])
+  
+  print(all_x_cost)
+
+  c = c_I * T + c_B * T+ list(map(lambda x: x * -1, b_P)) * T
+
+  # print(c)
