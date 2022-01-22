@@ -484,7 +484,8 @@ def main(U):
 """------------------max S from fixed x---------------"""
 
 def sub(x):
-  # print(f"x: {list(map(round, x))}")
+  for p in range(P):
+    print(f"x[{p}]: {list(map(round, x[T * p:T * (p + 1)]))}")
 
   # 最後にこれを足すの忘れずに
   all_x_cost = 0
@@ -497,10 +498,10 @@ def sub(x):
   c = []
   for p in range(P):
     for t in range(T):
-      c.append(-c_I[p])
+      c.append(-c_B[p])
   for p in range(P):
     for t in range(T):
-      c.append(-c_B[p])
+      c.append(-c_I[p])
   for p in range(P):
     for t in range(T):
       c.append(b_P[p])
@@ -508,9 +509,41 @@ def sub(x):
     for t in range(T):
       c.append(0) # Dの分
   
-  print(c)
+  # print(c)
 
   print("-------------------1st constraint-------------------")
-  
+  A_eq = []
+  b_eq = []
+
+  for p in range(P):
+    for t in range(T):
+      # initialize
+      B = np.zeros(P * T)
+      I = np.zeros(P * T)
+      s = np.zeros(P * T)
+      D = np.zeros(P * T)
+
+      p_t = p * T + t
+
+      B[p_t] = 1
+      I[p_t] = -1 
+      D[p_t] = -1
+
+      X_int = 0
+      for i in range(t + 1):
+        p_i = p * T + i
+        X_int += x[p_i]
+        for j in range(P):
+          j_i_Ldj = (i + Ld[j]) + j * T
+          if i + Ld[j] < T:
+            X_int += -b[p][j] * x[j_i_Ldj]
+      
+      A_eq.append(np.hstack([B, I, D, s]))
+      b_eq.append(-X_int)
+
+      # if p == 2 and t < 5:
+      #   print(f"(p,t) = ({p},{t})")
+      #   print(B)
+      #   print(-X_int)
 
   print("-------------------2nd constraint-------------------")
