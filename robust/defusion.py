@@ -2,8 +2,6 @@ P = 12
 T = 23
 R = 3
 
-
-import itertools
 import numpy as np
 
 """---------------------初期データ-----------------------"""
@@ -126,7 +124,6 @@ M_inv = np.linalg.inv(M)
 delta_nominals = []
 for d_nominal in d_nominals:
   array = []
-
   for i in range(len(d_nominal) - 1):
     array.append(d_nominal[i + 1] - d_nominal[i])
   array.append(sum(d_nominal))
