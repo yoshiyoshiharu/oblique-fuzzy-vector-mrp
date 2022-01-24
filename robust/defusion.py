@@ -74,4 +74,5 @@ x = res.x[sum(V_SIZE)*2:sum(V_SIZE)*2 + (P * T)]
 
 """----------------max S from x^k --------------"""
 
+print("-------maximize------------")
 oblique_robust.sub(x, delta_intervals, M)

@@ -474,28 +474,28 @@ def main(U):
 
   """----------------------------LP解く------------------------------------"""
   res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method="revised simplex")
-  # x = list(map(round, res.x))
+  x = list(map(round, res.x))
 
   print(f"fun: {res.fun}")
-  # debug(x)
+  debug(x)
 
   return res
 
 """------------------max S from fixed x---------------"""
 
 def sub(x, delta_intervals, M):
-  M_inv = np.linalg.inv(M)
   # print(f"M: {M}")
-  print(f"delta_intervals: {delta_intervals}")
+  print(f"delta_intervals[0]: {delta_intervals[0]}")
+
   for p in range(P):
     print(f"x[{p}]: {list(map(round, x[T * p:T * (p + 1)]))}")
 
   # 最後にこれを足すの忘れずに
   all_x_cost = 0
   for p in range(P):
-    all_x_cost += sum(x[p * T:(p + 1) * T - 1])
+    all_x_cost += c_P[p] * sum(x[T * p:T * (p + 1)])
   
-  # print(all_x_cost)
+  print(f"all_x_cost: {all_x_cost}")
 
   # 目的関数が負になっていることに注意する
   c = []
@@ -512,9 +512,10 @@ def sub(x, delta_intervals, M):
     for t in range(T):
       c.append(0) # Dの分
   
-  # print(c)
+  # print(f"c: {c}")
 
-  print("-------------------1st constraint-------------------")
+  """-------------------1st constraint-------------------"""
+  # print("-------------------1st constraint-------------------")
   A_eq = []
   b_eq = []
 
@@ -549,7 +550,8 @@ def sub(x, delta_intervals, M):
       #   print(B)
       #   print(-X_int)
 
-  print("-------------------2nd constraint-------------------")
+  """-------------------2nd constraint-------------------"""
+  # print("-------------------2nd constraint-------------------")
   for p in range(P):
     for t in range(T):
       # initialize
@@ -569,7 +571,8 @@ def sub(x, delta_intervals, M):
       A_eq.append(np.hstack([B, I, s, D]))
       b_eq.append(0)
 
-  print("-------------------demand constraint-------------------")
+  """-------------------demand constraint-------------------"""
+  # print("-------------------demand constraint-------------------")
   # M(D_1, ..., D_T) \in [delta, delta]の制約
   # MD <= 上限
   A_ub = []
@@ -622,10 +625,10 @@ def sub(x, delta_intervals, M):
   res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub=A_ub, b_ub=b_ub, bounds = bounds, method="revised simplex")
 
   print(f"fun: {-res.fun + all_x_cost}")
-  print(f"B: {res.x[0:P*T]}")
-  print(f"I: {res.x[P*T:P*T + P*T]}")
-  print(f"s: {res.x[P*T*2:P*T*2 + P*T]}")
-  print(f"D: {res.x[P*T*3:P*T*3 + P*T]}")
+  print(f"B: {res.x[0:T]}")
+  print(f"I: {res.x[P*T:P*T + T]}")
+  print(f"s: {res.x[P*T*2:P*T*2 + T]}")
+  print(f"D: {res.x[P*T*3:P*T*3 + T]}")
   D = res.x[P*T*3:P*T*4]
   delta = []
   for p in range(P):
