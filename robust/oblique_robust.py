@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import linprog
 
 P = 12
 T = 23
@@ -472,18 +473,20 @@ def main(U):
   bounds = B_bounds + I_bounds + x_bounds + z_bounds + pi_s_bounds + pi_bounds + pi_t_bounds
 
   """----------------------------LP解く------------------------------------"""
-  from scipy.optimize import linprog
   res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub = A_ub, b_ub = b_ub, bounds = bounds, method="revised simplex")
   # x = list(map(round, res.x))
 
-  # print(f"目的関数値: {res.fun}")
+  print(f"fun: {res.fun}")
   # debug(x)
 
   return res
 
 """------------------max S from fixed x---------------"""
 
-def sub(x):
+def sub(x, delta_intervals, M):
+  M_inv = np.linalg.inv(M)
+  # print(f"M: {M}")
+  print(f"delta_intervals: {delta_intervals}")
   for p in range(P):
     print(f"x[{p}]: {list(map(round, x[T * p:T * (p + 1)]))}")
 
@@ -529,7 +532,7 @@ def sub(x):
       I[p_t] = -1 
       D[p_t] = -1
 
-      X_int = 0
+      X_int = 0 # 販売できる数
       for i in range(t + 1):
         p_i = p * T + i
         X_int += x[p_i]
@@ -538,7 +541,7 @@ def sub(x):
           if i + Ld[j] < T:
             X_int += -b[p][j] * x[j_i_Ldj]
       
-      A_eq.append(np.hstack([B, I, D, s]))
+      A_eq.append(np.hstack([B, I, s, D]))
       b_eq.append(-X_int)
 
       # if p == 2 and t < 5:
@@ -547,3 +550,86 @@ def sub(x):
       #   print(-X_int)
 
   print("-------------------2nd constraint-------------------")
+  for p in range(P):
+    for t in range(T):
+      # initialize
+      B = np.zeros(P * T)
+      I = np.zeros(P * T)
+      s = np.zeros(P * T)
+      D = np.zeros(P * T)
+
+      p_t = p * T + t
+
+      B[p_t] = 1
+      D[p_t] = -1
+      for i in range(t + 1):
+        p_i = p * T + i
+        s[p_i] = 1
+
+      A_eq.append(np.hstack([B, I, s, D]))
+      b_eq.append(0)
+
+  print("-------------------demand constraint-------------------")
+  # M(D_1, ..., D_T) \in [delta, delta]の制約
+  # MD <= 上限
+  A_ub = []
+  b_ub = []
+
+  for p in range(P):
+    for t in range(T):
+      # initialize
+      B = np.zeros(P * T)
+      I = np.zeros(P * T)
+      s = np.zeros(P * T)
+      D = np.zeros(P * T)
+      
+      D[p * T:p * T + T] = M[t]
+
+      A_ub.append(np.hstack([B, I, s, D]))
+      b_ub.append(delta_intervals[p][t][1]) # 上限
+
+      # if p == 0:
+      #   print(D)
+      #   print(delta_intervals[p][t][1])
+
+  # 下限 <= MD
+  for p in range(P):
+    for t in range(T):
+      # initialize
+      B = np.zeros(P * T)
+      I = np.zeros(P * T)
+      s = np.zeros(P * T)
+      D = np.zeros(P * T)
+      
+      D[p * T:p * T + T] = -M[t]
+
+      A_ub.append(np.hstack([B, I, s, D]))
+      b_ub.append(-delta_intervals[p][t][0]) # 下限
+
+      # if p == 0:
+      #   print(D)
+      #   print(-delta_intervals[p][t][0])
+
+
+  B_bounds=[(0, None)] * (P * T)
+  I_bounds=[(0, None)] * (P * T)
+  s_bounds=[(0, None)] * (P * T)
+  D_bounds=[(0, None)] * (P * T)
+
+  bounds = B_bounds + I_bounds + s_bounds + D_bounds
+
+  """----------------------------LP解く------------------------------------"""
+  res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub=A_ub, b_ub=b_ub, bounds = bounds, method="revised simplex")
+
+  print(f"fun: {-res.fun + all_x_cost}")
+  print(f"B: {res.x[0:P*T]}")
+  print(f"I: {res.x[P*T:P*T + P*T]}")
+  print(f"s: {res.x[P*T*2:P*T*2 + P*T]}")
+  print(f"D: {res.x[P*T*3:P*T*3 + P*T]}")
+  D = res.x[P*T*3:P*T*4]
+  delta = []
+  for p in range(P):
+    D_p = D[p * T:p * T + T]
+    delta.append(M @ D_p)
+  
+  print(f"delta: {delta}")
