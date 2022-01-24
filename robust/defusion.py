@@ -32,15 +32,15 @@ M_inv = np.linalg.inv(M)
 delta_nominals = []
 for d_nominal in d_nominals:
   array = []
-  for i in range(len(d_nominal) - 1):
+  for i in range(T - 1):
     array.append(d_nominal[i + 1] - d_nominal[i])
-  array.append(sum(d_nominal))
+  array.append(sum(d_nominal[0:T]))
   delta_nominals.append(array)
 
 delta_intervals = []
 for delta_nominal in delta_nominals:
   array = []
-  for i in range(len(delta_nominal)):
+  for i in range(T):
     array.append([delta_nominal[i] - delta_nominal[i] * 0.5, delta_nominal[i] + delta_nominal[i] * 0.5])
   delta_intervals.append(array)
 

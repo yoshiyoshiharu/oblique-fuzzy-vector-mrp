@@ -1,12 +1,12 @@
 import numpy as np
 from scipy.optimize import linprog
 
-P = 12
-T = 23
+P = 2
+T = 4
 R = 3
 
 c_P = [1000, 500, 600, 100, 200, 100, 80, 100, 120, 100, 130, 120] # production cost of product p
-b_P = [10000, 5500, 0, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0] # sales price of product p 
+b_P = [10000, 5000, 0, 0, 0, 0, 0, 0 ,0 ,0 ,0 ,0] # sales price of product p 
 c_I = list(map(lambda x: x * 0.05, c_P)) # inventory cost of product p
 c_B = list(map(lambda x: x * 0.15, b_P)) # backordering cost of product p
 
@@ -485,7 +485,7 @@ def main(U):
 
 def sub(x, delta_intervals, M):
   # print(f"M: {M}")
-  print(f"delta_intervals[0]: {delta_intervals[0]}")
+  print(f"delta_intervals: {delta_intervals}")
 
   for p in range(P):
     print(f"x[{p}]: {list(map(round, x[T * p:T * (p + 1)]))}")
@@ -623,13 +623,14 @@ def sub(x, delta_intervals, M):
 
   """----------------------------LP解く------------------------------------"""
   res = linprog(c, A_eq = A_eq, b_eq = b_eq, A_ub=A_ub, b_ub=b_ub, bounds = bounds, method="revised simplex")
+  x = list(map(round, res.x))
 
   print(f"fun: {-res.fun + all_x_cost}")
-  print(f"B: {res.x[0:T]}")
-  print(f"I: {res.x[P*T:P*T + T]}")
-  print(f"s: {res.x[P*T*2:P*T*2 + T]}")
-  print(f"D: {res.x[P*T*3:P*T*3 + T]}")
-  D = res.x[P*T*3:P*T*4]
+  print(f"B: {x[0:P*T]}")
+  print(f"I: {x[P*T:P*T + P*T]}")
+  print(f"s: {x[P*T*2:P*T*2 + P*T]}")
+  print(f"D: {x[P*T*3:P*T*3 + P*T]}")
+  D = x[P*T*3:P*T*4]
   delta = []
   for p in range(P):
     D_p = D[p * T:p * T + T]
