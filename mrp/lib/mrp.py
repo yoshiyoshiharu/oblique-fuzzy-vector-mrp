@@ -1,8 +1,8 @@
 import itertools
 import numpy as np
 
-P = 4
-T = 4
+P = 12
+T = 8
 R = 3
 
 c_P = [1000, 600, 500, 100] # production cost of product p
