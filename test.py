@@ -3,11 +3,42 @@ d_nominals = [
   [0, 0, 379, 386, 400, 319, 386, 300, 387, 154, 144, 166, 151, 191, 156, 115, 150, 182, 100, 140, 281, 263, 257]
 ]
 
+print("--------t = T_1-------")
 for d_nominal in d_nominals:
-  print("---------------")
-  for i in range(16, 22):
+  for i in range(0, 5):
     delta = d_nominal[i + 1] - d_nominal[i]
-    print(f"[{delta - abs(delta) * 0.5}, {delta + abs(delta) * 0.5}]")
+    print(f"[{delta - abs(delta) * 0.2}, {delta + abs(delta) * 0.2}], ")
   else:
-    D = sum(d_nominal[16:23])
-    print(f"[{D - D * 0.5}, {D + D * 0.5}]")
+    D = sum(d_nominal[0:6])
+    print(f"[{D - D * 0.1}, {D + D * 0.1}]")
+  print("---------------")
+
+print("--------t = T_2-------")
+for d_nominal in d_nominals:
+  for i in range(6, 11):
+    delta = d_nominal[i + 1] - d_nominal[i]
+    print(f"[{delta - abs(delta) * 0.2}, {delta + abs(delta) * 0.2}], ")
+  else:
+    D = sum(d_nominal[6:12])
+    print(f"[{D - D * 0.1}, {D + D * 0.1}]")
+  print("---------------")
+
+print("--------t = T_3-------")
+for d_nominal in d_nominals:
+  for i in range(12, 17):
+    delta = d_nominal[i + 1] - d_nominal[i]
+    print(f"[{delta - abs(delta) * 0.2}, {delta + abs(delta) * 0.2}], ")
+  else:
+    D = sum(d_nominal[12:18])
+    print(f"[{D - D * 0.1}, {D + D * 0.1}]")
+  print("---------------")
+
+print("--------t = T_4-------")
+for d_nominal in d_nominals:
+  for i in range(18, 22):
+    delta = d_nominal[i + 1] - d_nominal[i]
+    print(f"[{delta - abs(delta) * 0.2}, {delta + abs(delta) * 0.2}], ")
+  else:
+    D = sum(d_nominal[18:23])
+    print(f"[{D - D * 0.1}, {D + D * 0.1}]")
+  print("---------------")
